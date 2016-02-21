@@ -36,7 +36,7 @@ Mesomatic depends upon having the following installed and, where applicable, run
 * ``lein``
 * The native Mesos library (matching the version used in this project).
 
-The latest version of this example is built against Mesos 0.27.0 and mesomatic 0.27.0-r0. You may look a previous releases to see if there are older versions of Mesos supported (should you be interested).
+The latest version of this example is built against Mesos 0.27.0 and mesomatic 0.27.0-r0. You may look at previous releases to see if there are older versions of Mesos supported (should you be interested).
 
 All other dependencies (including the Java bindings) are downloaded automatically by ``lein`` when you run the example.
 
@@ -47,7 +47,12 @@ All other dependencies (including the Java bindings) are downloaded automaticall
 $ lein mesomatic 127.0.0.1:5050 framework
 ```
 
-This example project needs access to the native Mesos library. If you get errors like ``Failed to load native Mesos library`` and ``java.lang.UnsatisfiedLinkError: no mesos in java.library.path``, one of the techniques to address this is setting the ``MESOS_NATIVE_JAVA_LIBRARY`` environment variable in your OS shell. For example, if you have built Mesos in ``/opt/mesos/0.27.0``
+This example project needs access to the native Mesos library. If you get errors like the following
+
+* ``Failed to load native Mesos library``
+* ``java.lang.UnsatisfiedLinkError: no mesos in java.library.path``
+
+then one of the techniques you may employ to address this is setting the ``MESOS_NATIVE_JAVA_LIBRARY`` environment variable in your OS shell. For example, if you have built Mesos in ``/opt/mesos/0.27.0``
 
 ```bash
 $ export MESOS_NATIVE_JAVA_LIBRARY=/opt/mesos/0.27.0/build/src/.libs/libmesos.so
@@ -58,7 +63,7 @@ At which point you may re-try the usage example above.
 
 ## Documentation [&#x219F;](#contents)
 
-The project's auto-generated documentation is available here:
+The project's auto-generated documentation is available here (such that it is):
 
 * [http://oubiwann.github.io/mesomatic-hello/](http://oubiwann.github.io/mesomatic-hello/)
 
