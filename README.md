@@ -12,7 +12,9 @@
 
 * [About](#about-)
 * [Usage](#usage-)
+* [Documentation](#documentation-)
 * [License](#license-)
+
 
 ## About [&#x219F;](#contents)
 
@@ -22,6 +24,14 @@ TBD
 ## Usage [&#x219F;](#contents)
 
 TBD
+
+
+## Documentation [&#x219F;](#contents)
+
+The LCMAP SEE API reference is slowly being updated with docstrings. The project's auto-generated documentation is available here:
+
+* [http://oubiwann.github.io/mesomatic-hello/](http://oubiwann.github.io/mesomatic-hello/)
+
 
 ## License [&#x219F;](#contents)
 
