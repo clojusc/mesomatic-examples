@@ -28,6 +28,13 @@
 
   That being said, only Mesos should call with the ``executor`` task type;
   calling humans will only call with the ``framework`` task type.
+
+  Note that in order for this to work, one needs to add the following alias to
+  the project's ``project.clj``:
+
+  ```clj
+  :aliases {\"mesomatic\" [\"run\" \"-m\" \"mesomatic-hello.core\"]}
+  ```
   "
   [master task-type]
   (twig/set-level! '[mesomatic-hello] (:log-level (get-config)))
