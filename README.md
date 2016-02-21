@@ -28,7 +28,7 @@ TBD
 
 ## Documentation [&#x219F;](#contents)
 
-The LCMAP SEE API reference is slowly being updated with docstrings. The project's auto-generated documentation is available here:
+The project's auto-generated documentation is available here:
 
 * [http://oubiwann.github.io/mesomatic-hello/](http://oubiwann.github.io/mesomatic-hello/)
 
