@@ -3,34 +3,15 @@
   (:require [clojure.core.async :refer [chan <! go] :as a]
             [clojure.tools.logging :as log]
             [twig.core :as twig]
-            [mesomatic.allocator :as alloc]
-            [mesomatic.async.executor :as async-executor]
-            [mesomatic.async.scheduler :as async-scheduler]
-            [mesomatic.executor :as executor]
-            [mesomatic.scheduler :as scheduler]
-            [mesomatic.types :as types]
-            [mesomatic-hello.executor :as mmh-exec]
-            [mesomatic-hello.scheduler :as mmh-sched])
+            [leiningen.core.project :as lein-prj]
+            [mesomatic-hello.executor :as mmh-executor]
+            [mesomatic-hello.framework :as mmh-framework])
   (:gen-class))
 
-
-(defn run-exec
-  ""
+(defn get-config
+  "Read the ``mesomatic-hello`` config data from ``project.clj``."
   []
-  (log/info "Running executor ...")
-  )
-
-(defn run-sched
-  ""
-  []
-  (log/info "Running scheduler ...")
-  )
-
-(defn run-framework
-  ""
-  []
-  (log/info "Running framework ...")
-  )
+  (:mesomatic-hello (lein-prj/read)))
 
 (defn -main
   "It is expected that this function be called from ``lein`` in the following
@@ -43,14 +24,16 @@
   where ``<task-type>`` is one of:
 
   * ``executor``
-  * ``scheduler``
   * ``framework``
+
+  That being said, only Mesos should call with the ``executor`` task type;
+  calling humans will only call with the ``framework`` task type.
   "
-  [host-port task-type]
-  (twig/set-level! '[mesomatic-hello] :debug)
-  (log/debug "Got host-port:" host-port)
+  [master task-type]
+  (twig/set-level! '[mesomatic-hello] (:log-level (get-config)))
+  (log/info "Running mesomatic-hello!")
+  (log/debug "Using master:" master)
   (log/debug "Got task-type:" task-type)
   (condp = task-type
-    "executor" (run-exec)
-    "scheduler" (run-sched)
-    "framework" (run-framework)))
+    "executor" (mmh-executor/run master)
+    "framework" (mmh-framework/run master)))

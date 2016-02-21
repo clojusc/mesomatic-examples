@@ -24,6 +24,7 @@ TBD
 ## Usage [&#x219F;](#contents)
 
 ```bash
+$ export MESOS_NATIVE_JAVA_LIBRARY=/opt/mesos/0.27.0/build/src/.libs/libmesos.so
 $ lein mesomatic 127.0.0.1:5050 framework
 ```
 
