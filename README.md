@@ -23,7 +23,9 @@ TBD
 
 ## Usage [&#x219F;](#contents)
 
-TBD
+```bash
+$ lein mesomatic 127.0.0.1:5050 framework
+```
 
 
 ## Documentation [&#x219F;](#contents)
