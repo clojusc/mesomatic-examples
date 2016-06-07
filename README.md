@@ -24,6 +24,7 @@ This example project demonstrates a minimal "Hello, World" Mesos framework for C
 Other places to go for learning more about how to use [Mesomatic](https://github.com/pyr/mesomatic):
 
 * An [example project](https://github.com/oubiwann/mesomatic-example) that follows in the tradition of the [Java](https://github.com/apache/mesos/tree/master/src/examples/java), and [Python](https://github.com/apache/mesos/tree/master/src/examples/python) Mesos examples
+* A [Docker-based example project](https://github.com/oubiwann/mesomatic-example-docker) which demonstrates running the Mesomatic port of the Mesos example in a Docker container
 * [Bundes](https://github.com/pyr/bundes/) - an actual, full Mesomatic application - this is the canonical example of Mesosmatic and one of the significant drivers for its development
 
 
