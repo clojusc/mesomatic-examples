@@ -1,11 +1,11 @@
-(defproject mesomatic-hello "0.1.0-dev"
+(defproject mesomatic-hello "0.2.0-SNAPSHOT"
   :description "Clojure and Mesos: A Mesomatic 'Hello World'"
   :url "https://github.com/oubiwann/mesomatic-hello"
   :license {:name "Eclipse Public License"
             :url "http://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [com.stuartsierra/component "0.3.1"]
-                 [twig "0.1.6"]
+                 [clojusc/twig "0.2.1"]
                  [spootnik/mesomatic "0.27.0-r0"]
                  [spootnik/mesomatic-async "0.27.0-r0"]
                  [leiningen-core "2.5.3"]]
@@ -15,7 +15,7 @@
   :mesomatic-hello {:log-level :debug}
   :codox {:project {:name "mesomatic-hello"
                     :description "A 'Hello, World' for Clojure and Mesos using Mesomatic"}
-          :namespaces [#"^mesomatic-hello\."]
+          :namespaces [#"^clojusc.mesomatic.hello\."]
           :output-path "docs/build"
           :doc-paths ["docs"]
           :metadata {:doc/format :markdown

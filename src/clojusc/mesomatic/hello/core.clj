@@ -1,4 +1,4 @@
-(ns mesomatic-hello.core
+(ns clojusc.mesomatic.hello.core
   "The namespace which holds the entry point for the hello-world demo."
   (:require [clojure.core.async :refer [chan <! go] :as a]
             [clojure.tools.logging :as log]
