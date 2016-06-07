@@ -64,7 +64,7 @@ At which point you may re-try the usage example above.
 
 ## Documentation [&#x219F;](#contents)
 
-The project's auto-generated documentation is available here (such that it is):
+The project's auto-generated documentation (such that it is) is available here:
 
 * [http://clojusc.github.io/mesomatic-hello/](http://clojusc.github.io/mesomatic-hello/)
 
