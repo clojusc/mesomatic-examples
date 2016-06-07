@@ -66,7 +66,7 @@ At which point you may re-try the usage example above.
 
 The project's auto-generated documentation is available here (such that it is):
 
-* [http://oubiwann.github.io/mesomatic-hello/](http://oubiwann.github.io/mesomatic-hello/)
+* [http://clojusc.github.io/mesomatic-hello/](http://clojusc.github.io/mesomatic-hello/)
 
 
 ## License [&#x219F;](#contents)
