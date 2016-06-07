@@ -44,6 +44,14 @@ All other dependencies (including the Java bindings) are downloaded automaticall
 
 ## Usage [&#x219F;](#contents)
 
+You'll need to have mesos running in order to see this example in action. If you've built your own Mesos, you can switch to the build directory, and after running ``make check`` (which run tests and generates necessary files/dirs for you), you can start up a local mesos:
+
+```bash
+$ ./bin/mesos-local.sh
+```
+
+Then, from the ``mesomatic-hello`` clone directory:
+
 ```bash
 $ lein mesomatic 127.0.0.1:5050 framework
 ```
