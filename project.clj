@@ -1,4 +1,4 @@
-(defproject mesomatic-hello "0.2.0-SNAPSHOT"
+(defproject clojusc/mesomatic-hello "0.2.0-SNAPSHOT"
   :description "Clojure and Mesos: A Mesomatic 'Hello World'"
   :url "https://github.com/oubiwann/mesomatic-hello"
   :license {:name "Eclipse Public License"
@@ -11,7 +11,7 @@
                  [leiningen-core "2.5.3"]]
   :plugins [[lein-codox "0.9.1"]
             [lein-simpleton "1.3.0"]]
-  :aliases {"mesomatic" ["run" "-m" "mesomatic-hello.core"]}
+  :aliases {"mesomatic" ["run" "-m" "clojusc.mesomatic.hello.core"]}
   :mesomatic-hello {:log-level :debug}
   :codox {:project {:name "mesomatic-hello"
                     :description "A 'Hello, World' for Clojure and Mesos using Mesomatic"}

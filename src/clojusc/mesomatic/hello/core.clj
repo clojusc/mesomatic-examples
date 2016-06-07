@@ -2,8 +2,8 @@
   "The namespace which holds the entry point for the hello-world demo."
   (:require [clojure.core.async :refer [chan <! go] :as a]
             [clojure.tools.logging :as log]
-            [twig.core :as logger]
             [leiningen.core.project :as lein-prj]
+            [clojusc.twig :as logger]
             [clojusc.mesomatic.hello.executor :as mmh-executor]
             [clojusc.mesomatic.hello.framework :as mmh-framework])
   (:gen-class))

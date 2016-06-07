@@ -2,7 +2,7 @@
   ""
   (:require [clojure.core.async :as a :refer [chan <! go]]
             [clojure.tools.logging :as log]
-            [twig.core :refer [pprint]]
+            [clojusc.twig :refer [pprint]]
             [mesomatic.async.executor :as async-executor]
             [mesomatic.executor :as executor :refer [executor-driver]]
             [mesomatic.types :as types]))
