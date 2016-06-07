@@ -8,7 +8,7 @@
                  [com.stuartsierra/component "0.3.1"]
                  [clojusc/twig "0.2.1"]
                  [spootnik/mesomatic "0.27.0-r0"]
-                 [spootnik/mesomatic-async "0.27.0-r0"]
+                 [spootnik/mesomatic-async "0.28.0-r0"]
                  [leiningen-core "2.5.3"]]
   :plugins [[lein-codox "0.9.1"]
             [lein-simpleton "1.3.0"]]
