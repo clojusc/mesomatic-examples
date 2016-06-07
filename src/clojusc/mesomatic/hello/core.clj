@@ -2,10 +2,10 @@
   "The namespace which holds the entry point for the hello-world demo."
   (:require [clojure.core.async :refer [chan <! go] :as a]
             [clojure.tools.logging :as log]
-            [twig.core :as twig]
+            [twig.core :as logger]
             [leiningen.core.project :as lein-prj]
-            [mesomatic-hello.executor :as mmh-executor]
-            [mesomatic-hello.framework :as mmh-framework])
+            [clojusc.mesomatic.hello.executor :as mmh-executor]
+            [clojusc.mesomatic.hello.framework :as mmh-framework])
   (:gen-class))
 
 (defn get-config
@@ -37,7 +37,7 @@
   ```
   "
   [master task-type]
-  (twig/set-level! '[mesomatic-hello] (:log-level (get-config)))
+  (logger/set-level! '[clojusc.mesomatic.hello] (:log-level (get-config)))
   (log/info "Running mesomatic-hello!")
   (log/debug "Using master:" master)
   (log/debug "Got task-type:" task-type)
