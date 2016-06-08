@@ -33,7 +33,8 @@
                 :count 1
                 :maxcol 1
                 :resources rsrcs
-                :command cmd})
+                ;:command cmd
+                })
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks
@@ -59,6 +60,7 @@
   (log/debug "Got offer id:" (get-in data [:offers 0 :id :value]))
   (log/debug "Got offer info:" (pprint (:offers data)))
   (log/debug "Got other data:" (pprint (dissoc data :offers)))
+  (log/debug "Got state:" (pprint state))
   (let [offer-id (get-in data [:offers 0 :id])
         framework-id (get-in data [:offers 0 :framework-id])
         agent-id (get-in data [:offers 0 :slave-id])
@@ -69,13 +71,16 @@
                     :framework-id framework-id)
         task (assoc task-info
                :slave-id agent-id
-               :task-id task-id
-               :executor exec-info)
-        tasks [{:task task}]]
+               ;:slave agent-id
+               :task-id [task-id]
+               :executor exec-info
+               )
+        tasks [(types/map->TaskInfo task)]]
     (log/debug "Built tasks:" (pprint tasks))
-    (log/info "Launching tasks ...")
+    (log/infof "Launching tasks with offer-id '%s'..." (:value offer-id))
     (scheduler/launch-tasks! (:driver state) offer-id tasks)
-    (assoc state :offers (:offers data) :tasks tasks)))
+    ;(assoc state :offers (:offers data) :tasks tasks)))
+    (assoc state :offers (:offers data))))
 
 (defmethod handle-msg :status-update
   [state data]
@@ -88,6 +93,13 @@
       (log/debug (pprint (keys state)))
       (a/close! (:channel state))
       (scheduler/stop! (:driver state))))
+  state)
+
+(defmethod handle-msg :framework-message
+  [state data]
+  (log/warn "Unhandled framework-message: " (pprint data))
+  (log/debug "State:" state)
+  (log/debug "Data:" data)
   state)
 
 (defmethod handle-msg :default
