@@ -37,10 +37,11 @@
   ```
   "
   [master task-type]
-  (logger/set-level! '[clojusc.mesomatic.hello] (:log-level (get-config)))
-  (log/info "Running mesomatic-hello!")
-  (log/debug "Using master:" master)
-  (log/debug "Got task-type:" task-type)
-  (condp = task-type
-    "executor" (mmh-executor/run master)
-    "framework" (mmh-framework/run master)))
+  (let [cfg (get-config)]
+    (logger/set-level! (:log-namespaces cfg) (:log-level cfg))
+    (log/info "Running mesomatic-hello!")
+    (log/debug "Using master:" master)
+    (log/debug "Got task-type:" task-type)
+    (condp = task-type
+      "executor" (mmh-executor/run master)
+      "framework" (mmh-framework/run master))))
