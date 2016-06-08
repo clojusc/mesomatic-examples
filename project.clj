@@ -14,6 +14,7 @@
             [lein-simpleton "1.3.0"]]
   :aliases {"mesomatic" ["run" "-m" "clojusc.mesomatic.hello.core"]}
   :mesomatic-hello {
+    :log-namespaces [clojusc.mesomatic.hello]
     :log-level :debug}
   :codox {
     :project {
@@ -24,4 +25,10 @@
     :doc-paths ["docs"]
     :metadata {
       :doc/format :markdown
-      :doc "Documentation forthcoming"}})
+      :doc "Documentation forthcoming"}}
+  :profiles {
+    :dev {
+      :source-paths ["dev-resources/src"]
+      :repl-options {:init-ns clojusc.mesomatic.hello.dev}
+    }
+    })
