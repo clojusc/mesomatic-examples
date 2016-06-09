@@ -8,6 +8,18 @@
             [mesomatic.types :as types]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+;;; Constants
+;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+;;;
+;;; In a real application, most of these would be defined in an appropriate
+;;; context, using application confgiration values, values extracted from
+;;; passed state, etc. This is done for pedagogical purposes only: in an
+;;; attempt to keep things clear and clean for the learning experience. Do
+;;; not emulate in production code!
+
+(def executor-info {:name "'Hello, World!' Executor"})
+
+;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;;
@@ -40,7 +52,9 @@
   (log/info "Running executor ...")
   (let [ch (chan)
         exec (async-executor/executor ch)
-        driver (executor-driver exec)]
+        _ (log/debug "Executor:" exec)
+        driver (executor-driver executor-info)
+        _ (log/debug "Driver:" driver)]
     (log/debug "Starting executor ...")
     (executor/start! driver)
     (log/debug "Reducing over executor channel messages ...")

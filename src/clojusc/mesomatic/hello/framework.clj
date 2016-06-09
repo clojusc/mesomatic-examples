@@ -33,7 +33,7 @@
                 :count 1
                 :maxcol 1
                 :resources rsrcs
-                ;:command cmd
+                :command cmd
                 })
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -71,9 +71,9 @@
                     :framework-id framework-id)
         task (assoc task-info
                :slave-id agent-id
-               ;:slave agent-id
+               :slave agent-id
                :task-id [task-id]
-               :executor exec-info
+               ;:executor exec-info
                )
         tasks [(types/map->TaskInfo task)]]
     (log/debug "Built tasks:" (pprint tasks))
@@ -82,24 +82,32 @@
     ;(assoc state :offers (:offers data) :tasks tasks)))
     (assoc state :offers (:offers data))))
 
+(defn get-error-msg
+  ""
+  [data]
+  (let [msg (get-in data [:status :message])]
+    (cond
+      (empty? msg) (get-in data [:status :reason])
+      :true msg)))
+
 (defmethod handle-msg :status-update
   [state data]
   (log/debug "Got status info:" (pprint data))
   (if-not (get-in data [:status :healhty])
     (do
-      (log/error (name (get-in data [:status :state]))
-                 "-"
-                 (get-in data [:status :message]))
+      (log/errorf "%s - %s"
+                  (name (get-in data [:status :state]))
+                  (name (get-error-msg data)))
       (log/debug (pprint (keys state)))
       (a/close! (:channel state))
       (scheduler/stop! (:driver state))))
   state)
 
-(defmethod handle-msg :framework-message
+(defmethod handle-msg :executor-lost
   [state data]
-  (log/warn "Unhandled framework-message: " (pprint data))
-  (log/debug "State:" state)
-  (log/debug "Data:" data)
+  (log/error "Could not communicate with specified executor")
+  (log/debug "State:" (pprint state))
+  (log/debug "Data:" (pprint data))
   state)
 
 (defmethod handle-msg :default
