@@ -53,7 +53,7 @@
   (let [ch (chan)
         exec (async-executor/executor ch)
         _ (log/debug "Executor:" exec)
-        driver (executor-driver executor-info)
+        driver (executor-driver exec)
         _ (log/debug "Driver:" driver)]
     (log/debug "Starting executor ...")
     (executor/start! driver)
