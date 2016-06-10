@@ -5,7 +5,8 @@
             [clojusc.twig :refer [pprint]]
             [mesomatic.async.executor :as async-executor]
             [mesomatic.executor :as executor :refer [executor-driver]]
-            [mesomatic.types :as types]))
+            [mesomatic.types :as types]
+            [clojusc.mesomatic.example.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Constants
@@ -17,7 +18,22 @@
 ;;; attempt to keep things clear and clean for the learning experience. Do
 ;;; not emulate in production code!
 
-(def executor-info {:name "'Hello, World!' Executor"})
+(defn info
+  ""
+  []
+  {:executor-id {:value (util/get-uuid)}
+   :name "Example Executor (Clojure)"})
+
+(defn cmd-info
+  ""
+  [master framework-id]
+  (into
+    (info)
+    {:framework-id framework-id
+     :command
+      {:value "/usr/local/bin/lein"
+       :arguments [master "executor"]
+       :shell true}}))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks
@@ -49,14 +65,14 @@
 (defn run
   ""
   [master]
-  (log/info "Running executor ...")
+  (log/info "Running example executor ...")
   (let [ch (chan)
         exec (async-executor/executor ch)
         _ (log/debug "Executor:" exec)
         driver (executor-driver exec)
         _ (log/debug "Driver:" driver)]
-    (log/debug "Starting executor ...")
+    (log/debug "Starting example executor ...")
     (executor/start! driver)
-    (log/debug "Reducing over executor channel messages ...")
+    (log/debug "Reducing over example executor channel messages ...")
     (a/reduce handle-msg {:driver driver} ch)
     (executor/join! driver)))
