@@ -1,4 +1,4 @@
-PROJ = mesomatic-hello
+PROJ = mesomatic-example
 ROOT_DIR = $(shell pwd)
 REPO = $(shell git config --get remote.origin.url)
 

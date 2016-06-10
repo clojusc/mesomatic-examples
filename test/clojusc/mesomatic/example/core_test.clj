@@ -1,6 +1,6 @@
-(ns clojusc.mesomatic.hello.core-test
+(ns clojusc.mesomatic.example.core-test
   (:require [clojure.test :refer :all]
-            [mesomatic-hello.core :refer :all]))
+            [mesomatic-example.core :as example]))
 
 (deftest a-test
   (testing "placeholder ..."

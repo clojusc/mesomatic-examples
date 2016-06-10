@@ -1,4 +1,4 @@
-(ns clojusc.mesomatic.hello.util
+(ns clojusc.mesomatic.example.util
   ""
   (:import java.util.UUID))
 

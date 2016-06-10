@@ -1,6 +1,6 @@
-# mesomatic-hello
+# mesomatic-example
 
-*A 'Hello, World' for Clojure and Mesos using Mesomatic*
+*A Clojure Port of the Mesos Java Example*
 
 [![][mesos-logo]][mesos-logo-large]
 
@@ -19,13 +19,7 @@
 
 ## About [&#x219F;](#contents)
 
-This example project demonstrates a minimal "Hello, World" Mesos framework for Clojure using the [Mesomatic library](https://github.com/pyr/mesomatic). This example covers only *very basic* usage of Mesos.
-
-Other places to go for learning more about how to use [Mesomatic](https://github.com/pyr/mesomatic):
-
-* An [example project](https://github.com/oubiwann/mesomatic-example) that follows in the tradition of the [Java](https://github.com/apache/mesos/tree/master/src/examples/java), and [Python](https://github.com/apache/mesos/tree/master/src/examples/python) Mesos examples
-* A [Docker-based example project](https://github.com/oubiwann/mesomatic-example-docker) which demonstrates running the Mesomatic port of the Mesos example in a Docker container
-* [Bundes](https://github.com/pyr/bundes/) - an actual, full Mesomatic application - this is the canonical example of Mesosmatic and one of the significant drivers for its development
+This example is a Clojure and [Mesomatic](https://github.com/pyr/mesomatic) port of the [Mesos Java example](https://github.com/apache/mesos/tree/master/src/examples/java).
 
 
 ## Dependencies [&#x219F;](#contents)
@@ -50,7 +44,7 @@ You'll need to have mesos running in order to see this example in action. If you
 $ ./bin/mesos-local.sh
 ```
 
-Then, from the ``mesomatic-hello`` clone directory:
+Then, from the ``mesomatic-example`` clone directory:
 
 ```bash
 $ lein mesomatic 127.0.0.1:5050 framework
@@ -74,7 +68,7 @@ At which point you may re-try the usage example above.
 
 The project's auto-generated documentation (such that it is) is available here:
 
-* [http://clojusc.github.io/mesomatic-hello/](http://clojusc.github.io/mesomatic-hello/)
+* [http://clojusc.github.io/mesomatic-example/](http://clojusc.github.io/mesomatic-example/)
 
 
 ## License [&#x219F;](#contents)

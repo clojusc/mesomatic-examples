@@ -1,4 +1,4 @@
-(ns clojusc.mesomatic.hello.executor
+(ns clojusc.mesomatic.example.executor
   ""
   (:require [clojure.core.async :as a :refer [chan <! go]]
             [clojure.tools.logging :as log]

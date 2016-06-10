@@ -1,6 +1,6 @@
-(defproject clojusc/mesomatic-hello "0.2.0-SNAPSHOT"
-  :description "Clojure and Mesos: A Mesomatic 'Hello World'"
-  :url "https://github.com/oubiwann/mesomatic-hello"
+(defproject clojusc/mesomatic-example "0.1.0-SNAPSHOT"
+  :description "A Clojure Port of the Mesos Java Example"
+  :url "https://github.com/clojusc/mesomatic-example"
   :license {
     :name "Eclipse Public License"
     :url "http://www.apache.org/licenses/LICENSE-2.0"}
@@ -12,15 +12,15 @@
                  [leiningen-core "2.5.3"]]
   :plugins [[lein-codox "0.9.1"]
             [lein-simpleton "1.3.0"]]
-  :aliases {"mesomatic" ["run" "-m" "clojusc.mesomatic.hello.core"]}
-  :mesomatic-hello {
-    :log-namespaces [clojusc.mesomatic.hello]
+  :aliases {"mesomatic" ["run" "-m" "clojusc.mesomatic.example.core"]}
+  :mesomatic-example {
+    :log-namespaces [clojusc.mesomatic.example]
     :log-level :debug}
   :codox {
     :project {
-      :name "mesomatic-hello"
-      :description "A 'Hello, World' for Clojure and Mesos using Mesomatic"}
-    :namespaces [#"^clojusc.mesomatic.hello\."]
+      :name "mesomatic-example"
+      :description "A Clojure Port of the Mesos Java Example"}
+    :namespaces [#"^clojusc.mesomatic.example\."]
     :output-path "docs/build"
     :doc-paths ["docs"]
     :metadata {
@@ -29,6 +29,6 @@
   :profiles {
     :dev {
       :source-paths ["dev-resources/src"]
-      :repl-options {:init-ns clojusc.mesomatic.hello.dev}
+      :repl-options {:init-ns clojusc.mesomatic.example.dev}
     }
     })

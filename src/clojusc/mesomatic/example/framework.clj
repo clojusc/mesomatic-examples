@@ -1,4 +1,4 @@
-(ns clojusc.mesomatic.hello.framework
+(ns clojusc.mesomatic.example.framework
   ""
   (:require [clojure.core.async :as a :refer [chan <! go]]
             [clojure.tools.logging :as log]
@@ -7,7 +7,7 @@
             [mesomatic.scheduler :as scheduler :refer [scheduler-driver]]
             [mesomatic.types :as types]
             [clojusc.twig :refer [pprint]]
-            [clojusc.mesomatic.hello.util :as util]))
+            [clojusc.mesomatic.example.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Constants
