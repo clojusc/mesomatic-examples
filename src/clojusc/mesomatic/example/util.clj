@@ -2,7 +2,8 @@
   ""
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]
-            [clojusc.twig :refer [pprint]])
+            [clojusc.twig :refer [pprint]]
+            [clojusc.mesomatic.example.resources :as resources])
   (:import java.util.UUID))
 
 (defn get-uuid
@@ -11,16 +12,6 @@
   (->> (UUID/randomUUID)
        (str)
        (assoc {} :value)))
-
-(defn make-rsrcs
-  ""
-  [& {:keys [cpus mem]}]
-  [{:name "cpus"
-    :scalar cpus
-    :type :value-scalar}
-   {:name "mem"
-    :scalar mem
-    :type :value-scalar}])
 
 (defn lower-key
   "Convert a string to a lower-cased keyword."
@@ -60,60 +51,13 @@
   [offer]
   (get-in offer [:slave-id]))
 
-(defn cpus-resource?
-  ""
-  [resource]
-  (if (= (:name resource) "cpus")
-    true
-    false))
-
-(defn mem-resource?
-  ""
-  [resource]
-  (if (= (:name resource) "mem")
-    true
-    false))
-
-(defn update-cpus
-  ""
-  [data resource]
-  (if (cpus-resource? resource)
-    (assoc data :cpus (-> resource
-                          :scalar
-                          (+ (or (:cpus data)))))
-    data))
-
-(defn update-mem
-  ""
-  [data resource]
-  (if (mem-resource? resource)
-    (assoc data :mem (-> resource
-                         :scalar
-                         (+ (or (:mem data) 0))))
-    data))
-
-(defn update-cpus-mem
-  ""
-  [data resource]
-  (-> data
-      (update-cpus resource)
-      (update-mem resource)))
-
-(defn sum-resources
-  ""
-  ([offer]
-    (sum-resources offer {:cpus 0 :mem 0}))
-  ([offer init-data]
-    (reduce update-cpus-mem
-            init-data
-            (:resources offer))))
-
 (defn process-offer
   ""
   [master-info limits status offer]
   (log/debug "limits:" limits)
   (log/debug "status:" status)
-  (let [rsrcs (sum-resources offer)]
+  (let [rsrcs (resources/sum offer)
+        rsrc-data (resources/make-map rsrcs)]
     (log/debugf "Received offer %s with %s cpus and %s mem."
                 (:id offer) (:cpus rsrcs) (:mem rsrcs))
     ))

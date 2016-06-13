@@ -21,10 +21,6 @@
 ;;; not emulate in production code!
 
 (def framework-info-map {:name "Example Framework (Clojure)"})
-(def task-info-map {:name "Example Task"
-                    :count 1
-                    :maxcol 1
-                    :resources (util/make-rsrcs :cpus 0.2 :mem 128.0)})
 (def limits
   {:cpus-per-task 1
    :mem-per-task 128})
