@@ -11,7 +11,7 @@
             [clojusc.mesomatic.example.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-;;; Constants
+;;; Constants and Data
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;;
 ;;; In a real application, most of these would be defined in an appropriate
@@ -20,11 +20,11 @@
 ;;; attempt to keep things clear and clean for the learning experience. Do
 ;;; not emulate in production code!
 
-(def framework-info {:name "Example Framework (Clojure)"})
-(def task-info {:name "Example Task"
-                :count 1
-                :maxcol 1
-                :resources (util/make-rsrcs :cpus 0.2 :mem 128.0)})
+(def framework-info-map {:name "Example Framework (Clojure)"})
+(def task-info-map {:name "Example Task"
+                    :count 1
+                    :maxcol 1
+                    :resources (util/make-rsrcs :cpus 0.2 :mem 128.0)})
 (def limits
   {:cpus-per-task 1
    :mem-per-task 128})
@@ -43,13 +43,17 @@
 
 (defmethod handle-msg :registered
   [state data]
-  (log/info "Registered with framework id:" (get-in data [:framework-id :value]))
-  (log/trace "Got master info:" (pprint (:master-info data)))
-  state)
+  (let [master-info (:master-info data)
+        framework-id (util/get-framework-id data)
+        exec-info (example-executor/cmd-info master-info framework-id)]
+    (log/info "Registered with framework id:" framework-id)
+    (log/trace "Got master info:" (pprint master-info))
+    (log/trace "Got state info:" (pprint state))
+    (assoc state :exec-info exec-info :master-info master-info)))
 
 (defmethod handle-msg :disconnected
   [state data]
-  (log/infof "Framework %s disconnected." (get-in data [:framework-id :value]))
+  (log/infof "Framework %s disconnected." (util/get-framework-id data))
   state)
 
 (defmethod handle-msg :resource-offers
@@ -57,13 +61,15 @@
   (log/info "Hanlding :resource-offers message ...")
   (log/trace "Got state:" (pprint state))
   (let [offers (:offers data)
-        tasks (util/schedule-tasks (:master-info data) limits offers)]
+        tasks (util/schedule-tasks state data limits)]
     (log/trace "Got offers data:" offers)
     (log/trace "Got other data:" (pprint (dissoc data :offers)))
+    (log/debug "Created tasks:" tasks)
     (assoc state :offers offers :tasks (into [] tasks))))
 
 (defmethod handle-msg :status-update
   [state data]
+  (log/info "Hanlding :status-update message ...")
   (log/debug "Got status info:" (pprint data))
   (if-not (get-in data [:status :healhty])
     (do
@@ -77,33 +83,33 @@
 
 (defmethod handle-msg :disconnected
   [state data]
-  (log/infof "Framework %s disconnected." (get-in data [:framework-id :value]))
+  (log/infof "Framework %s disconnected." (util/get-framework-id data))
   state)
 
 (defmethod handle-msg :offer-rescinded
   [state data offer-id]
   (log/infof "Offer %s rescinded from framework %s."
-             offer-id (get-in data [:framework-id :value]))
+             offer-id (util/get-framework-id data))
   state)
 
 (defmethod handle-msg :framework-message
   [state data executor-id slave-id bytes]
   (log/infof "Framework %s (executor=%s, slave=%s) got message: %s"
-             (get-in data [:framework-id :value])
+             (util/get-framework-id data)
              executor-id slave-id bytes)
   state)
 
 (defmethod handle-msg :slave-lost
   [state data slave-id]
   (log/error "Framework %s lost connection with slave %s."
-             (get-in data [:framework-id :value])
+             (util/get-framework-id data)
              slave-id)
   state)
 
 (defmethod handle-msg :executor-lost
   [state data executor-id slave-id status]
   (log/error "Framework %s lost connection with executor %s (slave=%s): %s"
-             (get-in data [:framework-id :value])
+             (util/get-framework-id data)
              executor-id slave-id status)
   state)
 
@@ -128,9 +134,9 @@
   (log/info "Running example framework ...")
   (let [ch (chan)
         sched (async-scheduler/scheduler ch)
-        driver (scheduler-driver sched framework-info master)]
+        driver (scheduler-driver sched framework-info-map master)]
     (log/debug "Starting example scheduler ...")
     (scheduler/start! driver)
     (log/debug "Reducing over example scheduler channel messages ...")
-    (a/reduce handle-msg {:driver driver :channel ch} ch)
+    (a/reduce handle-msg {:driver driver :channel ch :exec-info nil} ch)
     (scheduler/join! driver)))

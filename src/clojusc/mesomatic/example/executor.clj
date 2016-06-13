@@ -9,7 +9,7 @@
             [clojusc.mesomatic.example.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-;;; Constants
+;;; Constants and Data
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;;
 ;;; In a real application, most of these would be defined in an appropriate
@@ -18,17 +18,17 @@
 ;;; attempt to keep things clear and clean for the learning experience. Do
 ;;; not emulate in production code!
 
-(defn info
+(defn info-map
   ""
   []
   {:executor-id {:value (util/get-uuid)}
    :name "Example Executor (Clojure)"})
 
-(defn cmd-info
+(defn cmd-info-map
   ""
   [master-info framework-id]
   (into
-    (info)
+    (info-map)
     {:framework-id framework-id
      :command
       {:value "/usr/local/bin/lein"
@@ -36,6 +36,16 @@
                                    (:port master-info))
                    "executor"]
        :shell true}}))
+
+(defn info
+  ""
+  []
+  (types/->pb :CommandInfo (info-map)))
+
+(defn cmd-info
+  ""
+  [master-info framework-id]
+  (types/->pb :CommandInfo (cmd-info-map master-info framework-id)))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks

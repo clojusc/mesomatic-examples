@@ -1,7 +1,8 @@
 (ns clojusc.mesomatic.example.util
   ""
   (:require [clojure.tools.logging :as log]
-            [clojure.string :as string])
+            [clojure.string :as string]
+            [clojusc.twig :refer [pprint]])
   (:import java.util.UUID))
 
 (defn get-uuid
@@ -49,6 +50,16 @@
       (empty? msg) (get-in data [:status :reason])
       :true msg)))
 
+(defn get-framework-id
+  ""
+  [data]
+  (get-in data [:framework-id :value]))
+
+(defn get-agent-id
+  ""
+  [offer]
+  (get-in offer [:slave-id]))
+
 (defn cpus-resource?
   ""
   [resource]
@@ -68,7 +79,7 @@
   [data resource]
   (if (cpus-resource? resource)
     (assoc data :cpus (-> resource
-                          (get-in [:scalar :value])
+                          :scalar
                           (+ (or (:cpus data)))))
     data))
 
@@ -76,9 +87,9 @@
   ""
   [data resource]
   (if (mem-resource? resource)
-    (assoc data :mem  (-> resource
-                          (get-in [:scalar :value])
-                          (+ (or (:mem data) 0))))
+    (assoc data :mem (-> resource
+                         :scalar
+                         (+ (or (:mem data) 0))))
     data))
 
 (defn update-cpus-mem
@@ -90,20 +101,19 @@
 
 (defn sum-resources
   ""
-  [offer init-data]
-  (reduce update-cpus-mem
-          init-data
-          (flatten (map :resources offer))))
+  ([offer]
+    (sum-resources offer {:cpus 0 :mem 0}))
+  ([offer init-data]
+    (reduce update-cpus-mem
+            init-data
+            (:resources offer))))
 
 (defn process-offer
   ""
   [master-info limits status offer]
-  (let [init-data {:cpus 0 :mem 0}
-        _ (log/debug "master-into:" master-info)
-        _ (log/debug "limits:" limits)
-        _ (log/debug "status:" status)
-        _ (log/debug "offer resources:" (:resources offer))
-        rsrcs (sum-resources offer init-data)]
+  (log/debug "limits:" limits)
+  (log/debug "status:" status)
+  (let [rsrcs (sum-resources offer)]
     (log/debugf "Received offer %s with %s cpus and %s mem."
                 (:id offer) (:cpus rsrcs) (:mem rsrcs))
     ))
@@ -129,9 +139,14 @@
 
 (defn schedule-tasks
   ""
-  [master-info limits offers]
-  (let [status {:remaining-cpus nil
+  [state data limits]
+  (let [offers (:offers data)
+        master-info (:master-info state)
+        framework-id (get-framework-id data)
+        exec-info (:exec-info state)
+        status {:remaining-cpus nil
                 :remaining-mem nil}]
+    (log/trace "Offers:" (pprint offers))
     (->> offers
          (map #(process-offer master-info limits status %))
          (into []))))
