@@ -26,13 +26,15 @@
 
 (defn cmd-info
   ""
-  [master framework-id]
+  [master-info framework-id]
   (into
     (info)
     {:framework-id framework-id
      :command
       {:value "/usr/local/bin/lein"
-       :arguments [master "executor"]
+       :arguments [(format "%s:%s" (:hostname master-info)
+                                   (:port master-info))
+                   "executor"]
        :shell true}}))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -68,9 +70,7 @@
   (log/info "Running example executor ...")
   (let [ch (chan)
         exec (async-executor/executor ch)
-        _ (log/debug "Executor:" exec)
-        driver (executor-driver exec)
-        _ (log/debug "Driver:" driver)]
+        driver (executor-driver exec)]
     (log/debug "Starting example executor ...")
     (executor/start! driver)
     (log/debug "Reducing over example executor channel messages ...")

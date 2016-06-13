@@ -25,6 +25,9 @@
                 :count 1
                 :maxcol 1
                 :resources (util/make-rsrcs :cpus 0.2 :mem 128.0)})
+(def limits
+  {:cpus-per-task 1
+   :mem-per-task 128})
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks
@@ -44,38 +47,20 @@
   (log/trace "Got master info:" (pprint (:master-info data)))
   state)
 
+(defmethod handle-msg :disconnected
+  [state data]
+  (log/infof "Framework %s disconnected." (get-in data [:framework-id :value]))
+  state)
+
 (defmethod handle-msg :resource-offers
   [state data]
-  (log/info "Updating offers with" (count (:offers data)) "new offers ...")
-  (log/debug "Got offer id:" (get-in data [:offers 0 :id :value]))
-  (log/trace "Got offer info:" (pprint (:offers data)))
-  (log/trace "Got other data:" (pprint (dissoc data :offers)))
+  (log/info "Hanlding :resource-offers message ...")
   (log/trace "Got state:" (pprint state))
-  (let [offer-id (get-in data [:offers 0 :id])
-        framework-id (get-in data [:offers 0 :framework-id])
-        agent-id (get-in data [:offers 0 :slave-id])
-        task-id (util/get-uuid)
-        exec-info (example-executor/cmd-info (:master state) framework-id)
-        task (assoc task-info
-               :slave-id agent-id
-               :slave agent-id
-               :task-id [task-id]
-               :executor exec-info
-               )
-        tasks [(types/map->TaskInfo task)]]
-    (log/debug "Built tasks:" (pprint tasks))
-    (log/infof "Launching tasks with offer-id '%s'..." (:value offer-id))
-    (scheduler/launch-tasks! (:driver state) offer-id tasks)
-    ;(assoc state :offers (:offers data) :tasks tasks)))
-    (assoc state :offers (:offers data))))
-
-(defn get-error-msg
-  ""
-  [data]
-  (let [msg (get-in data [:status :message])]
-    (cond
-      (empty? msg) (get-in data [:status :reason])
-      :true msg)))
+  (let [offers (:offers data)
+        tasks (util/schedule-tasks (:master-info data) limits offers)]
+    (log/trace "Got offers data:" offers)
+    (log/trace "Got other data:" (pprint (dissoc data :offers)))
+    (assoc state :offers offers :tasks (into [] tasks))))
 
 (defmethod handle-msg :status-update
   [state data]
@@ -84,16 +69,47 @@
     (do
       (log/errorf "%s - %s"
                   (name (get-in data [:status :state]))
-                  (name (get-error-msg data)))
+                  (name (util/get-error-msg data)))
       (log/debug (pprint (keys state)))
       (a/close! (:channel state))
       (scheduler/stop! (:driver state))))
   state)
 
-(defmethod handle-msg :executor-lost
+(defmethod handle-msg :disconnected
   [state data]
-  (log/error "Could not communicate with specified executor")
-  (log/debug "State:" (pprint state))
+  (log/infof "Framework %s disconnected." (get-in data [:framework-id :value]))
+  state)
+
+(defmethod handle-msg :offer-rescinded
+  [state data offer-id]
+  (log/infof "Offer %s rescinded from framework %s."
+             offer-id (get-in data [:framework-id :value]))
+  state)
+
+(defmethod handle-msg :framework-message
+  [state data executor-id slave-id bytes]
+  (log/infof "Framework %s (executor=%s, slave=%s) got message: %s"
+             (get-in data [:framework-id :value])
+             executor-id slave-id bytes)
+  state)
+
+(defmethod handle-msg :slave-lost
+  [state data slave-id]
+  (log/error "Framework %s lost connection with slave %s."
+             (get-in data [:framework-id :value])
+             slave-id)
+  state)
+
+(defmethod handle-msg :executor-lost
+  [state data executor-id slave-id status]
+  (log/error "Framework %s lost connection with executor %s (slave=%s): %s"
+             (get-in data [:framework-id :value])
+             executor-id slave-id status)
+  state)
+
+(defmethod handle-msg :error
+  [state data message]
+  (log/error "Got error message: " message)
   (log/debug "Data:" (pprint data))
   state)
 
@@ -116,5 +132,5 @@
     (log/debug "Starting example scheduler ...")
     (scheduler/start! driver)
     (log/debug "Reducing over example scheduler channel messages ...")
-    (a/reduce handle-msg {:driver driver :channel ch :master master} ch)
+    (a/reduce handle-msg {:driver driver :channel ch} ch)
     (scheduler/join! driver)))
