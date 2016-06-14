@@ -2,6 +2,7 @@
   ""
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]
+            [mesomatic.types :as types]
             [clojusc.twig :refer [pprint]]
             [clojusc.mesomatic.example.resources :as resources])
   (:import java.util.UUID))
@@ -65,3 +66,10 @@
   ""
   [state]
   (:exec-info state))
+
+(defn get-pb-task-name
+  ""
+  [task]
+  (-> task
+      (types/pb->data)
+      :name))

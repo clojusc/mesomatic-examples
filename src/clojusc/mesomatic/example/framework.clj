@@ -64,7 +64,7 @@
     (log/trace "Got offers data:" offers-data)
     (log/trace "Got other data:" (pprint (dissoc data :offers)))
     (log/debug "Created tasks:"
-               (string/join ", " (map (comp :name types/pb->data) tasks)))
+               (string/join ", " (map util/get-pb-task-name tasks)))
     (log/trace "Got tasks data:" (map pprint tasks))
     (scheduler/launch-tasks! (:driver state) (:id offer-data) tasks)
     (assoc state :offers offers-data :tasks tasks)))
