@@ -29,14 +29,18 @@
   (loop [status {:remaining-cpus nil
                  :remaining-mem nil}
          index 1
-         offers offers
+         [offer & remaining-offers] offers
          tasks []]
-    (if-not (or (hit-limits? limits status) (empty? offers))
+    ;; XXX - start
+    (log/debug "Offer:" (pprint offer))
+    (log/debug "Resources:" (pprint (:resources offer)))
+    ;; XXX - end
+    (if (or (hit-limits? limits status) (empty? remaining-offers))
+      tasks
       (recur
         ;; XXX update remaining resources
         status
         (inc index)
-        (rest offers)
+        remaining-offers
         (conj tasks
-              (process-one state data limits status index (first offers))))
-      tasks)))
+              (process-one state data limits status index offer))))))
