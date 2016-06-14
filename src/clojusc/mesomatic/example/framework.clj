@@ -61,6 +61,11 @@
   [payload]
   (:master-info payload))
 
+(defn get-offer-id
+  ""
+  [payload]
+  (:offer-id payload))
+
 (defn get-status
   ""
   [payload]
@@ -75,6 +80,26 @@
   ""
   [payload]
   (get-in payload [:status :healthy]))
+
+(defn get-executor-id
+  ""
+  [payload]
+  (get-in payload [:executor-id :value]))
+
+(defn get-slave-id
+  ""
+  [payload]
+  (get-in payload [:slave-id :value]))
+
+(defn get-message
+  ""
+  [payload]
+  (:message payload))
+
+(defn get-bytes
+  ""
+  [payload]
+  (:data payload))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; State utility functions
@@ -156,7 +181,7 @@
     (log/tracef "Got payload for %d task(s): %s"
                 (count tasks)
                 (pprint (into [] (map pprint tasks))))
-    (log/debug "Launching tasks ...")
+    (log/info "Launching tasks ...")
     ;; XXX use new API for operations/accepting offers
     (scheduler/launch-tasks! driver (first offer-ids) tasks)
     (assoc state :offers offers-data :tasks tasks)))
@@ -187,16 +212,16 @@
 (defmethod handle-msg :offer-rescinded
   [state payload]
   (let [framework-id (get-framework-id payload)
-        offer-id nil]
+        offer-id (get-offer-id payload)]
     (log/infof "Offer %s rescinded from framework %s."
                offer-id (get-framework-id payload))
     state))
 
 (defmethod handle-msg :framework-message
   [state payload]
-  (let [executor-id nil
-        slave-id nil
-        bytes nil]
+  (let [executor-id (get-executor-id payload)
+        slave-id (get-slave-id payload)
+        bytes (get-bytes payload)]
     (log/infof "Framework %s (executor=%s, slave=%s) got message: %s"
                (get-framework-id payload)
                executor-id slave-id bytes)
@@ -204,7 +229,7 @@
 
 (defmethod handle-msg :slave-lost
   [state payload]
-  (let [slave-id nil]
+  (let [slave-id (get-slave-id payload)]
     (log/error "Framework %s lost connection with slave %s."
                (get-framework-id payload)
                slave-id)
@@ -212,19 +237,19 @@
 
 (defmethod handle-msg :executor-lost
   [state payload]
-  (let [executor-id nil
-       slave-id nil
-       status nil]
-    (log/error "Framework %s lost connection with executor %s (slave=%s): %s"
-               (get-framework-id payload)
-               executor-id slave-id status)
+  (let [executor-id (get-executor-id payload)
+        slave-id (get-slave-id payload)
+        status (get-status payload)]
+    (log/errorf (str "Framework lost connection with executor %s (slave=%s) "
+                     "with status code %s.")
+                executor-id slave-id status)
     state))
 
 (defmethod handle-msg :error
   [state payload]
-  (let [message nil]
+  (let [message (get-message payload)]
     (log/error "Got error message: " message)
-    (log/debug "Data:" payload)
+    (log/debug "Data:" (pprint payload))
     state))
 
 (defmethod handle-msg :default
