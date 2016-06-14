@@ -16,9 +16,12 @@
     task-info))
 
 (defn hit-limits?
+  ""
   [limits status]
-  ;; XXX add logic for checking current status against values in limits data
-  false)
+  (if (or (< (:remaining-cpus status) (:cpus-per-task limits))
+          (< (:remaining-mem status) (:mem-per-task limits)))
+    true
+    false))
 
 (defn process-all
   ""
