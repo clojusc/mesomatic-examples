@@ -1,6 +1,7 @@
 (ns clojusc.mesomatic.example.framework
   ""
   (:require [clojure.core.async :as a :refer [chan <! go]]
+            [clojure.string :as string]
             [clojure.tools.logging :as log]
             [mesomatic.async.executor :as async-executor]
             [mesomatic.async.scheduler :as async-scheduler]
@@ -62,8 +63,10 @@
         tasks (offers/process-all state data limits offers-data)]
     (log/trace "Got offers data:" offers-data)
     (log/trace "Got other data:" (pprint (dissoc data :offers)))
-    (log/debug "Created tasks:" tasks)
-    (assoc state :offers offers-data :tasks (into [] tasks))))
+    (log/debug "Created tasks:"
+               (string/join ", " (map (comp :name types/pb->data) tasks)))
+    (log/trace "Got tasks data:" (map pprint tasks))
+    (assoc state :offers offers-data :tasks tasks)))
 
 (defmethod handle-msg :status-update
   [state data]

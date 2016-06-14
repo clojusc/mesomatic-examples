@@ -8,18 +8,32 @@
 
 (defn process-one
   ""
-  [state data limits status offer]
+  [state data limits status index offer]
   (log/debug "limits:" limits)
   (log/debug "status:" status)
-  (let [task-info (task/make state data offer)]
+  (let [task-info (task/make state data index offer)]
     (log/trace "Got task info:" (pprint task-info))
-    ))
+    task-info))
+
+(defn hit-limits?
+  [limits status]
+  ;; XXX add logic for checking current status against values in limits data
+  false)
 
 (defn process-all
   ""
   [state data limits offers]
-  (let [status {:remaining-cpus nil
-                :remaining-mem nil}
-        process-fn (partial process-one state data limits status)]
-    ;; XXX probbaly going to convert this to a loop + recur
-    (map process-fn offers)))
+  (loop [status {:remaining-cpus nil
+                 :remaining-mem nil}
+         index 1
+         offers offers
+         tasks []]
+    (if-not (or (hit-limits? limits status) (empty? offers))
+      (recur
+        ;; XXX update remaining resources
+        status
+        (inc index)
+        (rest offers)
+        (conj tasks
+              (process-one state data limits status index (first offers))))
+      tasks)))
