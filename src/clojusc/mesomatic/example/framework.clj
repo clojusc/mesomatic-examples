@@ -66,6 +66,7 @@
     (log/debug "Created tasks:"
                (string/join ", " (map (comp :name types/pb->data) tasks)))
     (log/trace "Got tasks data:" (map pprint tasks))
+    (scheduler/launch-tasks! (:driver state) (:id offer-data) tasks)
     (assoc state :offers offers-data :tasks tasks)))
 
 (defmethod handle-msg :status-update
