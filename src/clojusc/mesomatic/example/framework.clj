@@ -8,6 +8,8 @@
             [mesomatic.types :as types]
             [clojusc.twig :refer [pprint]]
             [clojusc.mesomatic.example.executor :as example-executor]
+            [clojusc.mesomatic.example.offers :as offers]
+            [clojusc.mesomatic.example.task :as task]
             [clojusc.mesomatic.example.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -56,12 +58,12 @@
   [state data]
   (log/info "Hanlding :resource-offers message ...")
   (log/trace "Got state:" (pprint state))
-  (let [offers (:offers data)
-        tasks (util/schedule-tasks state data limits)]
-    (log/trace "Got offers data:" offers)
+  (let [offers-data (util/get-offers data)
+        tasks (offers/process state data limits offers-data)]
+    (log/trace "Got offers data:" offers-data)
     (log/trace "Got other data:" (pprint (dissoc data :offers)))
     (log/debug "Created tasks:" tasks)
-    (assoc state :offers offers :tasks (into [] tasks))))
+    (assoc state :offers offers-data :tasks (into [] tasks))))
 
 (defmethod handle-msg :status-update
   [state data]

@@ -46,12 +46,20 @@
                          (+ (or (:mem data) 0))))
     data))
 
+(defn debug-totals
+  ""
+  [data]
+  (log/debugf "Totalled %s cpus and %s mem from offer."
+              (:cpus data) (:mem data))
+  data)
+
 (defn update-cpus-mem
   ""
   [data resource]
   (-> data
       (update-cpus resource)
-      (update-mem resource)))
+      (update-mem resource)
+      (debug-totals)))
 
 (defn sum
   ""
@@ -62,3 +70,9 @@
             init-data
             (:resources offer))))
 
+(defn make
+  ""
+  [offer]
+  (-> offer
+      (sum)
+      (make-map)))
