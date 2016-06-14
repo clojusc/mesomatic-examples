@@ -31,11 +31,13 @@
     (info-map)
     {:framework-id {:value framework-id}
      :command
-      {:value "/usr/local/bin/lein"
-       :arguments [(format "%s:%s" (:hostname master-info)
-                                   (:port master-info))
-                   "executor"]
-       :shell true}}))
+      {:value "/bin/pwd"
+       ;:value "/usr/local/bin/lein"
+       ;:arguments [(format "%s:%s" (:hostname master-info)
+       ;                            (:port master-info))
+       ;            "executor"]
+       ;:environment (util/make-env)
+       :shell false}}))
 
 (defn info
   ""
