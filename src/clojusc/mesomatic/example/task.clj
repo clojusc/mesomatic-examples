@@ -17,8 +17,8 @@
   (into task-info-map
         {:name (format (:name task-info-map) index)
          :task-id (util/get-uuid)
-         :slave-id (util/get-agent-id offer)
-         :executor (util/get-exec-info state)
+         :slave-id (util/get-agent-id offer) ;; maybe no functrion for this ...
+         :executor (util/get-exec-info state) ;; use new payload ns instead
          :resources (resources/make offer)}))
 
 (defn make
@@ -28,7 +28,9 @@
        (make-map state data index)
        (types/->pb :TaskInfo)))
 
-(defn schedule-tasks
+(defn get-pb-name
   ""
-  []
-  )
+  [task]
+  (-> task
+      (types/pb->data)
+      :name))

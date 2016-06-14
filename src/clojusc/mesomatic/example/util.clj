@@ -2,7 +2,6 @@
   ""
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]
-            [mesomatic.types :as types]
             [clojusc.twig :refer [pprint]]
             [clojusc.mesomatic.example.resources :as resources])
   (:import java.util.UUID))
@@ -17,7 +16,9 @@
 (defn lower-key
   "Convert a string to a lower-cased keyword."
   [str]
-  (comp keyword string/lower-case))
+  (-> str
+      (string/lower-case)
+      (keyword)))
 
 (defn keys->keyword
   "Convert all the keys in a map from strings to lower-cased keywords."
@@ -34,42 +35,18 @@
        (into [])
        (assoc {} :variables)))
 
-(defn get-error-msg
-  ""
-  [data]
-  (let [msg (get-in data [:status :message])]
-    (cond
-      (empty? msg) (get-in data [:status :reason])
-      :true msg)))
-
-(defn get-framework-id
-  ""
-  [data]
-  (get-in data [:framework-id :value]))
+;; XXX probably remove this function
 
 (defn get-agent-id
   ""
   [offer]
   (get-in offer [:slave-id]))
 
-(defn get-offers
-  ""
-  [data]
-  (get-in data [:offers]))
-
-(defn get-master-info
-  ""
-  [state]
-  (:master-info state))
+;; XXX move this into new payload ns
 
 (defn get-exec-info
   ""
   [state]
   (:exec-info state))
 
-(defn get-pb-task-name
-  ""
-  [task]
-  (-> task
-      (types/pb->data)
-      :name))
+

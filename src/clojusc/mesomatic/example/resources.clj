@@ -46,10 +46,10 @@
                          (+ (or (:mem data) 0))))
     data))
 
-(defn debug-totals
+(defn trace-totals
   ""
   [data]
-  (log/debugf "Totalled %s cpus and %s mem from offer."
+  (log/tracef "Totalled %s cpus and %s mem from offer."
               (:cpus data) (:mem data))
   data)
 
@@ -59,7 +59,7 @@
   (-> data
       (update-cpus resource)
       (update-mem resource)
-      (debug-totals)))
+      (trace-totals)))
 
 (defn sum
   ""

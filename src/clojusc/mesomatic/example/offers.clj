@@ -10,17 +10,13 @@
 (defn process-one
   ""
   [state data limits status index offer]
-  (log/debug "limits:" limits)
-  (log/debug "status:" status)
-  (let [task-info (task/make state data index offer)]
+  (let [task-info (task/make-map state data index offer)]
     (log/trace "Got task info:" (pprint task-info))
     task-info))
 
 (defn hit-limits?
   ""
   [limits status]
-  (log/debug "limits:" limits)
-  (log/debug "status:" status)
   (if (or (< (:remaining-cpus status) (:cpus-per-task limits))
           (< (:remaining-mem status) (:mem-per-task limits)))
     (do
@@ -42,14 +38,14 @@
       (update :remaining-cpus (partial - (:cpus rsrcs)))
       (update :remaining-mem (partial - (:mem rsrcs)))))
 
-(defn process-all
+(defn loop-offers
   ""
   [state data limits offers]
   (loop [status {:remaining-cpus 0
                  :remaining-mem 0}
          index 1
          [offer & remaining-offers] offers
-         tasks []]
+         tasks [(process-one state data limits status index offer)]]
     (let [rsrcs (resources/sum offer)
           status (update-status status rsrcs)]
       (if (quit-loop? limits status remaining-offers)
@@ -65,6 +61,11 @@
             remaining-offers
             (conj tasks
                   (process-one state data limits status index offer))))))))
+
+(defn process-all
+  ""
+  [state data limits offers]
+  (into [] (loop-offers state data limits offers)))
 
 (defn get-ids
   ""

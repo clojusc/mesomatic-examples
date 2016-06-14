@@ -29,6 +29,77 @@
    :mem-per-task 128})
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+;;; Payload utility functions
+;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+;;;
+;;; These are intended to make the callbacks below easier to read, while
+;;; providing a little buffer around data and implementation: if (when) the
+;;; Mesos messaging API/data structure changes (again), only the functions
+;;; below will need to be changed (you won't have to dig through the rest of
+;;; the code looking for data structures to update).
+
+(defn get-framework-id
+  ""
+  [payload]
+  (get-in payload [:framework-id :value]))
+
+(defn get-offers
+  ""
+  [payload]
+  (get-in payload [:offers]))
+
+(defn get-error-msg
+  ""
+  [payload]
+  (let [msg (get-in payload [:status :message])]
+    (cond
+      (empty? msg) (name (get-in payload [:status :reason]))
+      :true msg)))
+
+(defn get-master-info
+  ""
+  [payload]
+  (:master-info payload))
+
+(defn get-status
+  ""
+  [payload]
+  (:status payload))
+
+(defn get-state
+  ""
+  [payload]
+  (name (get-in payload [:status :state])))
+
+(defn healthy?
+  ""
+  [payload]
+  (get-in payload [:status :healthy]))
+
+;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+;;; State utility functions
+;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+;;;
+;;; These are intended to make the callbacks below easier to read, while
+;;; providing a little buffer around data and implementation of our own state
+;;; data structure.
+
+(defn get-driver
+  ""
+  [state]
+  (:driver state))
+
+(defn get-channel
+  ""
+  [state]
+  (:channel state))
+
+(defn get-exec-info
+  ""
+  [state]
+  (:exec-info state))
+
+;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;;
@@ -38,12 +109,26 @@
 ;;; Armstrong's blog post on Red/Green Callbacks:
 ;;;  * http://joearms.github.io/2013/04/02/Red-and-Green-Callbacks.html
 
-(defmulti handle-msg (comp :type last vector))
+(defmulti handle-msg
+  "This is a custom multimethod for handling messages that are received on the
+  async scheduler channel.
+
+  Note that:
+
+  * though the methods are associated with types whose names match the
+    scheduler API, these functions are those are quite different and do not
+    accept the same parameters
+  * each handler's callback (below) only takes two parameters:
+     1. state that gets passed to successive calls (if returned by the handler)
+     2. the payload that is sent to the async channel by the scheduler API
+  * as such, if there is something in a message which you would like to persist
+    or have access to in other functions, you'll need to assoc it to state."
+  (comp :type last vector))
 
 (defmethod handle-msg :registered
-  [state data]
-  (let [master-info (:master-info data)
-        framework-id (util/get-framework-id data)
+  [state payload]
+  (let [master-info (get-master-info payload)
+        framework-id (get-framework-id payload)
         exec-info (example-executor/cmd-info-map master-info framework-id)]
     (log/info "Registered with framework id:" framework-id)
     (log/trace "Got master info:" (pprint master-info))
@@ -51,80 +136,100 @@
     (assoc state :exec-info exec-info :master-info master-info)))
 
 (defmethod handle-msg :disconnected
-  [state data]
-  (log/infof "Framework %s disconnected." (util/get-framework-id data))
+  [state payload]
+  (log/infof "Framework %s disconnected." (get-framework-id payload))
   state)
 
 (defmethod handle-msg :resource-offers
-  [state data]
+  [state payload]
   (log/info "Hanlding :resource-offers message ...")
   (log/trace "Got state:" (pprint state))
-  (let [offers-data (util/get-offers data)
-        tasks (offers/process-all state data limits offers-data)]
+  (let [offers-data (get-offers payload)
+        offer-ids (offers/get-ids offers-data)
+        tasks (offers/process-all state payload limits offers-data)
+        driver (get-driver state)]
     (log/trace "Got offers data:" offers-data)
-    (log/trace "Got other data:" (pprint (dissoc data :offers)))
+    (log/debug "Got offer IDs:" offer-ids)
+    (log/trace "Got other payload:" (pprint (dissoc payload :offers)))
     (log/debug "Created tasks:"
-               (string/join ", " (map util/get-pb-task-name tasks)))
-    (log/trace "Got tasks data:" (map pprint tasks))
+               (string/join ", " (map task/get-pb-name tasks)))
+    (log/tracef "Got payload for %d task(s): %s"
+                (count tasks)
+                (pprint (into [] (map pprint tasks))))
     (log/debug "Launching tasks ...")
-    (scheduler/launch-tasks! (:driver state) (:id offer-data) tasks)
+    ;; XXX use new API for operations/accepting offers
+    (scheduler/launch-tasks! driver (first offer-ids) tasks)
     (assoc state :offers offers-data :tasks tasks)))
 
 (defmethod handle-msg :status-update
-  [state data]
-  (log/info "Hanlding :status-update message ...")
-  (log/debug "Got status info:" (pprint data))
-  (if-not (get-in data [:status :healhty])
-    (do
-      (log/errorf "%s - %s"
-                  (name (get-in data [:status :state]))
-                  (name (util/get-error-msg data)))
-      (log/debug (pprint (keys state)))
-      (a/close! (:channel state))
-      (scheduler/stop! (:driver state))))
-  state)
+  [state payload]
+  (let [status (get-status payload)
+        state-name (get-state payload)]
+    (log/info "Hanlding :status-update message ...")
+    (log/info "Got state:" state-name)
+    (log/trace "Got status:" (pprint status))
+    (log/trace "Got status info:" (pprint payload))
+    (if-not (healthy? payload)
+      (do
+        (log/errorf "%s - %s"
+                    state-name
+                    (get-error-msg payload))
+        (log/debug (pprint (keys state)))
+        (a/close! (get-channel state))
+        (scheduler/stop! (get-driver state))))
+    state))
 
 (defmethod handle-msg :disconnected
-  [state data]
-  (log/infof "Framework %s disconnected." (util/get-framework-id data))
+  [state payload]
+  (log/infof "Framework %s disconnected." (get-framework-id payload))
   state)
 
 (defmethod handle-msg :offer-rescinded
-  [state data offer-id]
-  (log/infof "Offer %s rescinded from framework %s."
-             offer-id (util/get-framework-id data))
-  state)
+  [state payload]
+  (let [framework-id (get-framework-id payload)
+        offer-id nil]
+    (log/infof "Offer %s rescinded from framework %s."
+               offer-id (get-framework-id payload))
+    state))
 
 (defmethod handle-msg :framework-message
-  [state data executor-id slave-id bytes]
-  (log/infof "Framework %s (executor=%s, slave=%s) got message: %s"
-             (util/get-framework-id data)
-             executor-id slave-id bytes)
-  state)
+  [state payload]
+  (let [executor-id nil
+        slave-id nil
+        bytes nil]
+    (log/infof "Framework %s (executor=%s, slave=%s) got message: %s"
+               (get-framework-id payload)
+               executor-id slave-id bytes)
+    state))
 
 (defmethod handle-msg :slave-lost
-  [state data slave-id]
-  (log/error "Framework %s lost connection with slave %s."
-             (util/get-framework-id data)
-             slave-id)
-  state)
+  [state payload]
+  (let [slave-id nil]
+    (log/error "Framework %s lost connection with slave %s."
+               (get-framework-id payload)
+               slave-id)
+    state))
 
 (defmethod handle-msg :executor-lost
-  [state data executor-id slave-id status]
-  (log/error "Framework %s lost connection with executor %s (slave=%s): %s"
-             (util/get-framework-id data)
-             executor-id slave-id status)
-  state)
+  [state payload]
+  (let [executor-id nil
+       slave-id nil
+       status nil]
+    (log/error "Framework %s lost connection with executor %s (slave=%s): %s"
+               (get-framework-id payload)
+               executor-id slave-id status)
+    state))
 
 (defmethod handle-msg :error
-  [state data message]
-  (log/error "Got error message: " message)
-  (log/debug "Data:" (pprint data))
-  state)
+  [state payload]
+  (let [message nil]
+    (log/error "Got error message: " message)
+    (log/debug "Data:" payload)
+    state))
 
 (defmethod handle-msg :default
-  [state data]
-  (log/warn "Unhandled message: " (pprint data))
+  [state payload]
+  (log/warn "Unhandled message: " (pprint payload))
   state)
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
