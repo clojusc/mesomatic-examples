@@ -2,6 +2,7 @@
   ""
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]
+            [mesomatic.types :as types]
             [clojusc.twig :refer [pprint]]
             [clojusc.mesomatic.example.resources :as resources]
             [clojusc.mesomatic.example.util :as util]))
@@ -18,6 +19,13 @@
          :slave-id (util/get-agent-id offer)
          :executor (util/get-exec-info state)
          :resources (resources/make offer)}))
+
+(defn make
+  ""
+  [state data offer]
+  (->> offer
+       (make-map state data)
+       (types/->pb :TaskInfo)))
 
 (defn schedule-tasks
   ""

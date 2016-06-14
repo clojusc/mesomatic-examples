@@ -21,7 +21,7 @@
 (defn info-map
   ""
   []
-  {:executor-id {:value (util/get-uuid)}
+  {:executor-id (util/get-uuid)
    :name "Example Executor (Clojure)"})
 
 (defn cmd-info-map
@@ -29,7 +29,7 @@
   [master-info framework-id]
   (into
     (info-map)
-    {:framework-id framework-id
+    {:framework-id {:value framework-id}
      :command
       {:value "/usr/local/bin/lein"
        :arguments [(format "%s:%s" (:hostname master-info)
@@ -40,12 +40,14 @@
 (defn info
   ""
   []
-  (types/->pb :CommandInfo (info-map)))
+  (types/->pb :ExecutorInfo (info-map)))
 
 (defn cmd-info
   ""
   [master-info framework-id]
-  (types/->pb :CommandInfo (cmd-info-map master-info framework-id)))
+  (let [exec-info (cmd-info-map master-info framework-id)]
+    (log/debug "exec-info:" (pprint exec-info))
+    (types/->pb :ExecutorInfo exec-info)))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks

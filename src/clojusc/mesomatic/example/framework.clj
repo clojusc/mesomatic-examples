@@ -43,7 +43,7 @@
   [state data]
   (let [master-info (:master-info data)
         framework-id (util/get-framework-id data)
-        exec-info (example-executor/cmd-info master-info framework-id)]
+        exec-info (example-executor/cmd-info-map master-info framework-id)]
     (log/info "Registered with framework id:" framework-id)
     (log/trace "Got master info:" (pprint master-info))
     (log/trace "Got state info:" (pprint state))
@@ -59,7 +59,7 @@
   (log/info "Hanlding :resource-offers message ...")
   (log/trace "Got state:" (pprint state))
   (let [offers-data (util/get-offers data)
-        tasks (offers/process state data limits offers-data)]
+        tasks (offers/process-all state data limits offers-data)]
     (log/trace "Got offers data:" offers-data)
     (log/trace "Got other data:" (pprint (dissoc data :offers)))
     (log/debug "Created tasks:" tasks)
