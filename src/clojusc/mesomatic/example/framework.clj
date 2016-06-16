@@ -99,7 +99,7 @@
 (defn get-bytes
   ""
   [payload]
-  (:data payload))
+  (.toStringUtf8 (get-in payload [:status :data])))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; State utility functions
@@ -182,8 +182,11 @@
                 (count tasks)
                 (pprint (into [] (map pprint tasks))))
     (log/info "Launching tasks ...")
-    ;; XXX use new API for operations/accepting offers
-    (scheduler/launch-tasks! driver (first offer-ids) tasks)
+    (scheduler/accept-offers
+      driver
+      offer-ids
+      [{:type :operation-launch
+        :tasks tasks}])
     (assoc state :offers offers-data :tasks tasks)))
 
 (defmethod handle-msg :status-update
@@ -193,7 +196,9 @@
     (log/info "Hanlding :status-update message ...")
     (log/info "Got state:" state-name)
     (log/trace "Got status:" (pprint status))
-    (log/trace "Got status info:" (pprint payload))
+    (log/debug "Got status info:" (pprint payload))
+    (log/debug "Bytes:" (pprint (get-bytes payload)))
+    (log/debug "UUID:" (pprint (.toStringUtf8 (get-in payload [:status :uuid]))))
     (if-not (healthy? payload)
       (do
         (log/errorf "%s - %s"
