@@ -49,4 +49,9 @@
   [state]
   (:exec-info state))
 
-
+(defn cwd
+  ""
+  []
+  (-> "."
+      (java.io.File.)
+      (.getAbsolutePath)))
