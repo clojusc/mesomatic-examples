@@ -26,18 +26,20 @@
 
 (defn cmd-info-map
   ""
-  [master-info framework-id]
+  [master-info framework-id cwd]
   (into
     (info-map)
     {:framework-id {:value framework-id}
      :command
-      {:value "/bin/pwd"
-       ;:value "/usr/local/bin/lein"
-       ;:arguments [(format "%s:%s" (:hostname master-info)
+      {:value (format "echo; cd %s && echo `pwd`;echo" cwd)
+       ;:arguments ["-al"]
+       ; :value "cd /home/oubiwann/lab/clojure/mesomatic-example && /usr/local/bin/lein"
+       ; :arguments ["mesomatic"
+       ;             (format "%s:%s" (:hostname master-info)
        ;                            (:port master-info))
        ;            "executor"]
        ;:environment (util/make-env)
-       :shell false}}))
+       :shell true}}))
 
 (defn info
   ""
@@ -46,8 +48,8 @@
 
 (defn cmd-info
   ""
-  [master-info framework-id]
-  (let [exec-info (cmd-info-map master-info framework-id)]
+  [master-info framework-id cwd]
+  (let [exec-info (cmd-info-map master-info framework-id cwd)]
     (log/debug "exec-info:" (pprint exec-info))
     (types/->pb :ExecutorInfo exec-info)))
 
@@ -63,16 +65,51 @@
 
 (defmulti handle-msg (comp :type last vector))
 
+(defmethod handle-msg :registered
+  [state payload]
+  (log/info "Registered executor: " (pprint payload))
+  state)
+
+(defmethod handle-msg :reregistered
+  [state payload]
+  (log/info "Reregistered executor: " (pprint payload))
+  state)
+
+(defmethod handle-msg :disconnected
+  [state payload]
+  (log/info "Executor has disconnected: " (pprint payload))
+  state)
+
 (defmethod handle-msg :launch-task
-  [this data]
-  (log/info "Launching task %s ..." (pprint data))
-  (log/debug "Task data: " (pprint data))
-  this)
+  [state payload]
+  (log/info "Launching task %s ..." (pprint payload))
+  (log/debug "Task payload: " (pprint payload))
+  state)
+
+(defmethod handle-msg :kill-task
+  [state payload]
+  (log/info "Killing task: " (pprint payload))
+  state)
+
+(defmethod handle-msg :framework-message
+  [state payload]
+  (log/info "Got framework message: " (pprint payload))
+  state)
+
+(defmethod handle-msg :shutdown
+  [state payload]
+  (log/info "Shutting down executor: " (pprint payload))
+  state)
+
+(defmethod handle-msg :error
+  [state payload]
+  (log/info "Error in executor: " (pprint payload))
+  state)
 
 (defmethod handle-msg :default
-  [this data]
-  (log/warn "Unhandled message: " (pprint data))
-  this)
+  [state payload]
+  (log/warn "Unhandled message: " (pprint payload))
+  state)
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Executor entrypoint
@@ -81,7 +118,7 @@
 (defn run
   ""
   [master]
-  (log/info "Running example executor ...")
+  (log/infof "Running example executor from %s..." (util/cwd))
   (let [ch (chan)
         exec (async-executor/executor ch)
         driver (executor-driver exec)]
