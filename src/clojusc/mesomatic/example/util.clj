@@ -2,6 +2,7 @@
   ""
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]
+            [leiningen.core.main :as lein]
             [clojusc.twig :refer [pprint]]
             [clojusc.mesomatic.example.resources :as resources])
   (:import java.util.UUID))
@@ -55,3 +56,9 @@
   (-> "."
       (java.io.File.)
       (.getAbsolutePath)))
+
+(defn finish
+  ""
+  [& {:keys [exit-code]}]
+  (lein/exit exit-code)
+  exit-code)

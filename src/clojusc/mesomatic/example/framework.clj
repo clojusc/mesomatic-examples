@@ -205,9 +205,9 @@
         (log/errorf "%s - %s"
                     state-name
                     (get-error-msg payload))
-        (log/debug (pprint (keys state)))
         (a/close! (get-channel state))
-        (scheduler/stop! (get-driver state))))
+        (scheduler/stop! (get-driver state))
+        (util/finish :exit-code 127)))
     state))
 
 (defmethod handle-msg :disconnected
