@@ -154,7 +154,8 @@
   [state payload]
   (let [master-info (get-master-info payload)
         framework-id (get-framework-id payload)
-        exec-info (example-executor/cmd-info-map master-info framework-id)]
+        exec-info (example-executor/cmd-info-map
+                    master-info framework-id (util/cwd))]
     (log/info "Registered with framework id:" framework-id)
     (log/trace "Got master info:" (pprint master-info))
     (log/trace "Got state info:" (pprint state))
@@ -167,7 +168,7 @@
 
 (defmethod handle-msg :resource-offers
   [state payload]
-  (log/info "Hanlding :resource-offers message ...")
+  (log/info "Handling :resource-offers message ...")
   (log/trace "Got state:" (pprint state))
   (let [offers-data (get-offers payload)
         offer-ids (offers/get-ids offers-data)
@@ -193,7 +194,7 @@
   [state payload]
   (let [status (get-status payload)
         state-name (get-state payload)]
-    (log/info "Hanlding :status-update message ...")
+    (log/info "Handling :status-update message ...")
     (log/info "Got state:" state-name)
     (log/trace "Got status:" (pprint status))
     (log/debug "Got status info:" (pprint payload))
@@ -276,5 +277,7 @@
     (log/debug "Starting example scheduler ...")
     (scheduler/start! driver)
     (log/debug "Reducing over example scheduler channel messages ...")
-    (a/reduce handle-msg {:driver driver :channel ch :exec-info nil} ch)
+    (a/reduce handle-msg {:driver driver
+                          :channel ch
+                          :exec-info nil} ch)
     (scheduler/join! driver)))
