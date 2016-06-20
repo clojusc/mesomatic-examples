@@ -4,6 +4,7 @@
             [clojure.tools.logging :as log]
             [leiningen.core.project :as lein-prj]
             [clojusc.twig :as logger]
+            [clojusc.mesomatic.example.exception-framework :as ex-framework]
             [clojusc.mesomatic.example.executor :as executor]
             [clojusc.mesomatic.example.framework :as framework])
   (:gen-class))
@@ -44,4 +45,5 @@
     (log/debug "Got task-type:" task-type)
     (condp = task-type
       "executor" (executor/run master)
-      "framework" (framework/run master))))
+      "framework" (framework/run master)
+      "exception-framework" (ex-framework/run master))))
