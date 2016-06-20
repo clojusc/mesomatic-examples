@@ -18,6 +18,8 @@
 ;;; attempt to keep things clear and clean for the learning experience. Do
 ;;; not emulate in production code!
 
+(def lein "/usr/local/bin/lein")
+
 (defn info-map
   ""
   []
@@ -30,16 +32,12 @@
   (into
     (info-map)
     {:framework-id {:value framework-id}
-     :command
-      {:value (format "echo; cd %s && echo `pwd`;echo" cwd)
-       ;:arguments ["-al"]
-       ; :value "cd /home/oubiwann/lab/clojure/mesomatic-example && /usr/local/bin/lein"
-       ; :arguments ["mesomatic"
-       ;             (format "%s:%s" (:hostname master-info)
-       ;                            (:port master-info))
-       ;            "executor"]
-       ;:environment (util/make-env)
-       :shell true}}))
+     :command {:value (format "cd %s && %s mesomatic %s:%s executor"
+                              cwd
+                              lein
+                              (:hostname master-info)
+                              (:port master-info))
+               :shell true}}))
 
 (defn info
   ""
