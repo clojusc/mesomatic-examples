@@ -166,6 +166,7 @@
     (log/info "Registered with framework id:" framework-id)
     (log/trace "Got master info:" (pprint master-info))
     (log/trace "Got state info:" (pprint state))
+    (log/trace "Got exec info:" (pprint exec-info))
     (assoc state :exec-info exec-info :master-info master-info)))
 
 (defmethod handle-msg :disconnected
