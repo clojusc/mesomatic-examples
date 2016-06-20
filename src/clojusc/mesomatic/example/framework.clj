@@ -23,7 +23,9 @@
 ;;; attempt to keep things clear and clean for the learning experience. Do
 ;;; not emulate in production code!
 
-(def framework-info-map {:name "Example Framework (Clojure)"})
+(def framework-info-map {:name "Example Framework (Clojure)"
+                         :principal "test-framework-clojure"
+                         :checkpoint true})
 (def limits
   {:cpus-per-task 1
    :mem-per-task 128})
@@ -101,6 +103,11 @@
   [payload]
   (.toStringUtf8 (get-in payload [:status :data])))
 
+(defn log-framework-msg
+  ""
+  [framework-id executor-id slave-id msg]
+  (log/info "Placeholder: handle log message ..." (pprint msg)))
+
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; State utility functions
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -141,7 +148,7 @@
   Note that:
 
   * though the methods are associated with types whose names match the
-    scheduler API, these functions are those are quite different and do not
+    scheduler API, these functions and those are quite different and do not
     accept the same parameters
   * each handler's callback (below) only takes two parameters:
      1. state that gets passed to successive calls (if returned by the handler)
@@ -175,7 +182,7 @@
         tasks (offers/process-all state payload limits offers-data)
         driver (get-driver state)]
     (log/trace "Got offers data:" offers-data)
-    (log/debug "Got offer IDs:" offer-ids)
+    (log/debug "Got offer IDs:" (map :value offer-ids))
     (log/trace "Got other payload:" (pprint (dissoc payload :offers)))
     (log/debug "Created tasks:"
                (string/join ", " (map task/get-pb-name tasks)))
@@ -225,12 +232,14 @@
 
 (defmethod handle-msg :framework-message
   [state payload]
-  (let [executor-id (get-executor-id payload)
+  (let [framework-id (get-framework-id payload)
+        executor-id (get-executor-id payload)
         slave-id (get-slave-id payload)
         bytes (get-bytes payload)]
-    (log/infof "Framework %s (executor=%s, slave=%s) got message: %s"
-               (get-framework-id payload)
-               executor-id slave-id bytes)
+    (if (= (:type payload) :log)
+      (log-framework-msg framework-id executor-id slave-id bytes)
+      (log/infof "Framework %s got message from executor %s (slave=%s): %s"
+                 framework-id executor-id slave-id bytes))
     state))
 
 (defmethod handle-msg :slave-lost
@@ -273,7 +282,11 @@
   (log/info "Running example framework ...")
   (let [ch (chan)
         sched (async-scheduler/scheduler ch)
-        driver (scheduler-driver sched framework-info-map master)]
+        driver (scheduler-driver sched
+                                 framework-info-map
+                                 master
+                                 nil
+                                 false)]
     (log/debug "Starting example scheduler ...")
     (scheduler/start! driver)
     (log/debug "Reducing over example scheduler channel messages ...")

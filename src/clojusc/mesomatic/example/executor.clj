@@ -54,6 +54,39 @@
     (types/->pb :ExecutorInfo exec-info)))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+;;; Utility functions
+;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+(defn send-log
+  ""
+  [state level message]
+  (executor/send-framework-message!
+    (:driver state)
+    {:type :log
+     :level level
+     :message message}))
+
+(defn send-log-debug
+  ""
+  [state message]
+  (send-log state :debug message))
+
+(defn send-log-info
+  ""
+  [state message]
+  (send-log state :info message))
+
+(defn send-log-warn
+  ""
+  [state message]
+  (send-log state :warn message))
+
+(defn send-log-error
+  ""
+  [state message]
+  (send-log state :error message))
+
+;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;;
@@ -67,48 +100,49 @@
 
 (defmethod handle-msg :registered
   [state payload]
-  (log/info "Registered executor: " (pprint payload))
+  (send-log-info state "Registered executor: " (pprint payload))
   state)
 
 (defmethod handle-msg :reregistered
   [state payload]
-  (log/info "Reregistered executor: " (pprint payload))
+
+  (send-log-info state "Reregistered executor: " (pprint payload))
   state)
 
 (defmethod handle-msg :disconnected
   [state payload]
-  (log/info "Executor has disconnected: " (pprint payload))
+  (send-log-info state "Executor has disconnected: " (pprint payload))
   state)
 
 (defmethod handle-msg :launch-task
   [state payload]
-  (log/info "Launching task %s ..." (pprint payload))
-  (log/debug "Task payload: " (pprint payload))
+  (send-log-info state "Launching task %s ..." (pprint payload))
+  (send-log-debug state "Task payload: " (pprint payload))
   state)
 
 (defmethod handle-msg :kill-task
   [state payload]
-  (log/info "Killing task: " (pprint payload))
+  (send-log-info state "Killing task: " (pprint payload))
   state)
 
 (defmethod handle-msg :framework-message
   [state payload]
-  (log/info "Got framework message: " (pprint payload))
+  (send-log-info state "Got framework message: " (pprint payload))
   state)
 
 (defmethod handle-msg :shutdown
   [state payload]
-  (log/info "Shutting down executor: " (pprint payload))
+  (send-log-info state "Shutting down executor: " (pprint payload))
   state)
 
 (defmethod handle-msg :error
   [state payload]
-  (log/info "Error in executor: " (pprint payload))
+  (send-log-error state "Error in executor: " (pprint payload))
   state)
 
 (defmethod handle-msg :default
   [state payload]
-  (log/warn "Unhandled message: " (pprint payload))
+  (send-log-warn "Unhandled message: " (pprint payload))
   state)
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -123,7 +157,10 @@
         exec (async-executor/executor ch)
         driver (executor-driver exec)]
     (log/debug "Starting example executor ...")
-    (executor/start! driver)
+    ;(executor/start! driver)
+    (executor/run-driver! driver)
     (log/debug "Reducing over example executor channel messages ...")
-    (a/reduce handle-msg {:driver driver} ch)
-    (executor/join! driver)))
+    (a/reduce handle-msg {:driver driver
+                          :ch ch} ch)
+    ;(executor/join! driver)
+    ))

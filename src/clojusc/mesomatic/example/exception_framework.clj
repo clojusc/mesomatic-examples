@@ -107,8 +107,7 @@
   [master]
   (log/info "Running example exception-framework ...")
   (let [ch (chan)
-        ;sched (async-scheduler/scheduler ch)
-        sched (scheduler/scheduler)
+        sched (async-scheduler/scheduler ch)
         driver (scheduler-driver sched
                                  framework-info-map
                                  master
