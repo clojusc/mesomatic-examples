@@ -1,4 +1,4 @@
-(ns clojusc.mesomatic.example.dev
+(ns clojusc.mesomatic.examples.dev
   "Dev namespace with requires, constants, and functions setup and ready to
   go."
   (:require [clojure.core.async :as a :refer [chan <! go]]
@@ -9,9 +9,9 @@
             [mesomatic.scheduler :as scheduler]
             [mesomatic.types :as types]
             [clojusc.twig :as logger]
-            [clojusc.mesomatic.example.executor :as example-executor]
-            [clojusc.mesomatic.example.framework :as example-framework]
-            [clojusc.mesomatic.example.util :as util]))
+            [clojusc.mesomatic.examples.executor :as example-executor]
+            [clojusc.mesomatic.examples.framework :as example-framework]
+            [clojusc.mesomatic.examples.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Dev Constants
