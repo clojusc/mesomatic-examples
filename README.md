@@ -87,7 +87,7 @@ $ lein mesomatic 127.0.0.1:5050 exception-framework
 
 The project's auto-generated documentation (such that it is) is available here:
 
-* [http://clojusc.github.io/mesomatic-example/](http://clojusc.github.io/mesomatic-example/)
+* [http://clojusc.github.io/mesomatic-examples/](http://clojusc.github.io/mesomatic-examples/)
 
 
 ## License [&#x219F;](#contents)
