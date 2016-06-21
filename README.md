@@ -12,6 +12,7 @@
 
 * [About](#about-)
 * [Dependencies](#dependencies-)
+* [Set Up](#set-up-)
 * [Usage](#usage-)
 * [Documentation](#documentation-)
 * [License](#license-)
@@ -42,7 +43,7 @@ All other dependencies (including the Java bindings) are downloaded
 automatically by ``lein`` when you run the examples.
 
 
-## Usage [&#x219F;](#contents)
+## Set Up [&#x219F;](#contents)
 
 You'll need to have mesos running in order to see these examples in action. If
 you've built your own Mesos, you can switch to the build directory, and after
@@ -51,12 +52,6 @@ you), you can start up a local mesos:
 
 ```bash
 $ ./bin/mesos-local.sh
-```
-
-Then, from the ``mesomatic-examples`` clone directory:
-
-```bash
-$ lein mesomatic 127.0.0.1:5050 framework
 ```
 
 The examples need access to the native Mesos library. If you get errors like
@@ -73,7 +68,19 @@ example, if you have built Mesos in ``/opt/mesos/0.28.2``
 $ export MESOS_NATIVE_JAVA_LIBRARY=/opt/mesos/0.28.2/build/src/.libs/libmesos.so
 ```
 
-At which point you may re-try running the desired example.
+
+## Usage [&#x219F;](#contents)
+
+With the necessary set up complete, from the ``mesomatic-examples`` clone
+directory you can run the following examples:
+
+```bash
+$ lein mesomatic 127.0.0.1:5050 framework
+```
+
+```bash
+$ lein mesomatic 127.0.0.1:5050 exception-framework
+```
 
 
 ## Documentation [&#x219F;](#contents)
