@@ -105,8 +105,18 @@
 
 (defn log-framework-msg
   ""
-  [framework-id executor-id slave-id msg]
-  (log/info "Placeholder: handle log message ..." (pprint msg)))
+  [framework-id executor-id slave-id payload]
+  (let [bytes (String. (:data payload))
+        log-type? (partial string/includes? bytes)]
+    (cond
+      (log-type? "TRACE") (log/trace bytes)
+      (log-type? "DEBUG") (log/debug bytes)
+      (log-type? "INFO") (log/info bytes)
+      (log-type? "WARN") (log/warn bytes)
+      (log-type? "ERROR") (log/error bytes)
+      :else (log/infof
+              "Framework %s got message from executor %s (slave=%s): %s"
+              framework-id executor-id slave-id bytes))))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; State utility functions
@@ -167,7 +177,9 @@
     (log/trace "Got master info:" (pprint master-info))
     (log/trace "Got state info:" (pprint state))
     (log/trace "Got exec info:" (pprint exec-info))
-    (assoc state :exec-info exec-info :master-info master-info)))
+    (assoc state :exec-info exec-info
+                 :master-info master-info
+                 :framework-id {:value framework-id})))
 
 (defmethod handle-msg :disconnected
   [state payload]
@@ -225,7 +237,7 @@
 
 (defmethod handle-msg :offer-rescinded
   [state payload]
-  (let [framework-id (get-framework-id payload)
+  (let [framework-id (get-framework-id state)
         offer-id (get-offer-id payload)]
     (log/infof "Offer %s rescinded from framework %s."
                offer-id (get-framework-id payload))
@@ -233,14 +245,10 @@
 
 (defmethod handle-msg :framework-message
   [state payload]
-  (let [framework-id (get-framework-id payload)
+  (let [framework-id (get-framework-id state)
         executor-id (get-executor-id payload)
-        slave-id (get-slave-id payload)
-        bytes (get-bytes payload)]
-    (if (= (:type payload) :log)
-      (log-framework-msg framework-id executor-id slave-id bytes)
-      (log/infof "Framework %s got message from executor %s (slave=%s): %s"
-                 framework-id executor-id slave-id bytes))
+        slave-id (get-slave-id payload)]
+    (log-framework-msg framework-id executor-id slave-id payload)
     state))
 
 (defmethod handle-msg :slave-lost
