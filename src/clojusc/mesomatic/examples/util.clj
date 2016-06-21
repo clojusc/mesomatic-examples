@@ -1,10 +1,10 @@
-(ns clojusc.mesomatic.example.util
+(ns clojusc.mesomatic.examples.util
   ""
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]
             [leiningen.core.main :as lein]
             [clojusc.twig :refer [pprint]]
-            [clojusc.mesomatic.example.resources :as resources])
+            [clojusc.mesomatic.examples.resources :as resources])
   (:import java.util.UUID))
 
 (defn get-uuid

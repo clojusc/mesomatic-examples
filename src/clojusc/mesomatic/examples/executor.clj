@@ -1,4 +1,4 @@
-(ns clojusc.mesomatic.example.executor
+(ns clojusc.mesomatic.examples.executor
   ""
   (:require [clojure.core.async :as a :refer [chan <! go]]
             [clojure.tools.logging :as log]
@@ -6,7 +6,7 @@
             [mesomatic.async.executor :as async-executor]
             [mesomatic.executor :as executor :refer [executor-driver]]
             [mesomatic.types :as types]
-            [clojusc.mesomatic.example.util :as util]))
+            [clojusc.mesomatic.examples.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Constants and Data

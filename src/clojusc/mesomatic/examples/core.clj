@@ -1,18 +1,18 @@
-(ns clojusc.mesomatic.example.core
-  "The namespace which holds the entry point for the example."
+(ns clojusc.mesomatic.examples.core
+  "The namespace which holds the entry point for the Mesomatic examples."
   (:require [clojure.core.async :refer [chan <! go] :as a]
             [clojure.tools.logging :as log]
             [leiningen.core.project :as lein-prj]
             [clojusc.twig :as logger]
-            [clojusc.mesomatic.example.exception-framework :as ex-framework]
-            [clojusc.mesomatic.example.executor :as executor]
-            [clojusc.mesomatic.example.framework :as framework])
+            [clojusc.mesomatic.examples.exception-framework :as ex-framework]
+            [clojusc.mesomatic.examples.executor :as executor]
+            [clojusc.mesomatic.examples.framework :as framework])
   (:gen-class))
 
 (defn get-config
-  "Read the ``mesomatic-example`` config data from ``project.clj``."
+  "Read the ``mesomatic-examples`` config data from ``project.clj``."
   []
-  (:mesomatic-example (lein-prj/read)))
+  (:mesomatic-examples (lein-prj/read)))
 
 (defn -main
   "It is expected that this function be called from ``lein`` in the following
@@ -34,13 +34,13 @@
   the project's ``project.clj``:
 
   ```clj
-  :aliases {\"mesomatic\" [\"run\" \"-m\" \"mesomatic-example.core\"]}
+  :aliases {\"mesomatic\" [\"run\" \"-m\" \"mesomatic-examples.core\"]}
   ```
   "
   [master task-type]
   (let [cfg (get-config)]
     (logger/set-level! (:log-namespaces cfg) (:log-level cfg))
-    (log/info "Running mesomatic-example!")
+    (log/info "Running a mesomatic example!")
     (log/debug "Using master:" master)
     (log/debug "Got task-type:" task-type)
     (condp = task-type

@@ -1,4 +1,4 @@
-(ns clojusc.mesomatic.example.exception-framework
+(ns clojusc.mesomatic.examples.exception-framework
   ""
   (:require [clojure.core.async :as a :refer [chan <! go]]
             [clojure.string :as string]
@@ -8,10 +8,10 @@
             [mesomatic.scheduler :as scheduler :refer [scheduler-driver]]
             [mesomatic.types :as types]
             [clojusc.twig :refer [pprint]]
-            [clojusc.mesomatic.example.executor :as example-executor]
-            [clojusc.mesomatic.example.offers :as offers]
-            [clojusc.mesomatic.example.task :as task]
-            [clojusc.mesomatic.example.util :as util]))
+            [clojusc.mesomatic.examples.executor :as example-executor]
+            [clojusc.mesomatic.examples.offers :as offers]
+            [clojusc.mesomatic.examples.task :as task]
+            [clojusc.mesomatic.examples.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Constants and Data

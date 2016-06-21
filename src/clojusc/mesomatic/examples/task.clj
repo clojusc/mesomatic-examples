@@ -1,11 +1,11 @@
-(ns clojusc.mesomatic.example.task
+(ns clojusc.mesomatic.examples.task
   ""
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]
             [mesomatic.types :as types]
             [clojusc.twig :refer [pprint]]
-            [clojusc.mesomatic.example.resources :as resources]
-            [clojusc.mesomatic.example.util :as util]))
+            [clojusc.mesomatic.examples.resources :as resources]
+            [clojusc.mesomatic.examples.util :as util]))
 
 (def task-info-map {:name "Example Task %d (Clojure)"
                     :count 1
