@@ -61,7 +61,7 @@
         msg (format "%s - %s" str-level message)
         bytes (.getBytes (str "Message from executor: " msg))]
     (if (= level :debug)
-      (log/debug "Sending message to framework: %s ..." msg))
+      (log/debugf "Sending message to framework: %s ..." msg))
     (executor/send-framework-message! (:driver state) bytes)))
 
 (defn send-log-trace
@@ -88,6 +88,51 @@
   ""
   [state message]
   (send-log state :error message))
+
+(defn update-task-success
+  ""
+  [task-id state payload]
+  (let [executor-id (get-executor-id payload)]
+    (executor/send-status-update!
+      (:driver state)
+      (types/->pb :TaskStatus {:task-id {:value task-id}
+                               :executor-id executor-id
+                               :state :task-running
+                               :healthy true}))
+    (send-log-info state (str "Running task " task-id))
+
+    ;; This is where one would perform the requested task
+    ;; ...
+
+    (executor/send-status-update!
+      (:driver state)
+      (types/->pb :TaskStatus {:task-id {:value task-id}
+                               :executor-id executor-id
+                               :state :task-finished
+                               :healthy true}))
+    (send-log-info state (str "Finished task " task-id))))
+
+(defn update-task-fail
+  ""
+  [task-id e state payload]
+  (let [executor-id (get-executor-id payload)]
+    (send-log-error state (format "Got exception for task %s: %s"
+                                  task-id (pprint e)))
+    (executor/send-status-update!
+      (:driver state)
+      (types/->pb :TaskStatus {:task-id {:value task-id}
+                               :executor-id executor-id
+                               :state :task-failed}))
+    (send-log-info state (format "Task %s failed" task-id))))
+
+
+(defn run-task
+  ""
+  [task-id state payload]
+  (try
+    (update-task-success task-id state payload)
+    (catch Exception e
+      (update-task-fail task-id e state payload))))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks
@@ -123,6 +168,9 @@
     (send-log-info state (format "Launching task %s ..." task-id))
     (log/debug "Task id:" task-id)
     (send-log-trace state (str "Task payload: " (pprint payload)))
+    (-> (run-task task-id state payload)
+        (Thread.)
+        (.start))
     state))
 
 (defmethod handle-msg :kill-task
