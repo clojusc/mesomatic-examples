@@ -24,6 +24,13 @@ These examples are a Clojure and [Mesomatic](https://github.com/pyr/mesomatic)
 port of the official [Mesos Java
 examples](https://github.com/apache/mesos/tree/master/src/examples/java).
 
+So far, the examples include:
+
+* framework (IN PROGRESS) - [add description]
+* framework-exception - a minimalist framework that only shows how an exception is handled by the Mesos framework
+
+We plan on adding the multi-executor framework as well. In addition to the standard Mesos Java examples, we'll be including a very simple "Hello, World" framework and a framework using a custom Docker container.
+
 
 ## Dependencies [&#x219F;](#contents)
 
