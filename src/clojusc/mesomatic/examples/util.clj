@@ -62,3 +62,22 @@
   [& {:keys [exit-code]}]
   (lein/exit exit-code)
   exit-code)
+
+(defn get-metas
+  ""
+  [an-ns meta-key]
+  (->> an-ns
+       (ns-publics)
+       (map (fn [[k v]] [k (meta-key (meta v))]))
+       (into {})))
+
+(defn get-meta
+  ""
+  [an-ns meta-key fn-name]
+  (-> (get-metas an-ns meta-key)
+      fn-name))
+
+(defn get-docstring
+  ""
+  [an-ns fn-name]
+  (get-meta an-ns :doc fn-name))
