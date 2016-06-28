@@ -65,19 +65,22 @@
 
 (defn get-metas
   ""
-  [an-ns meta-key]
+  [an-ns]
   (->> an-ns
        (ns-publics)
-       (map (fn [[k v]] [k (meta-key (meta v))]))
+       (map (fn [[k v]] [k (meta v)]))
        (into {})))
 
 (defn get-meta
-  ""
-  [an-ns meta-key fn-name]
-  (-> (get-metas an-ns meta-key)
-      fn-name))
+  "Takes the same form as the general `get-in` function:
+
+      (get-meta 'my.name.space ['my-func :doc])"
+  [an-ns rest]
+  (-> an-ns
+      (get-metas)
+      (get-in rest)))
 
 (defn get-docstring
   ""
   [an-ns fn-name]
-  (get-meta an-ns :doc fn-name))
+  (get-meta an-ns [fn-name :doc]))
