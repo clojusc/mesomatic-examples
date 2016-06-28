@@ -43,7 +43,8 @@
   * ``framework``
 
   and ``<task count>`` is an integer representing the number of times a task
-  will be run.
+  will be run. If a task count is not provided, a default value of `5` is
+  used instead.
 
   That being said, only Mesos should call with the ``executor`` task type;
   calling humans will only call with the ``framework`` task type.
