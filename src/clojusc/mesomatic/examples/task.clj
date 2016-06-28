@@ -17,7 +17,7 @@
   (into task-info-map
         {:name (format (:name task-info-map) index)
          :task-id (util/get-uuid)
-         :slave-id (util/get-agent-id offer) ;; maybe no functrion for this ...
+         :slave-id (util/get-agent-id offer)  ;; maybe no functrion for this ...
          :executor (util/get-exec-info state) ;; use new payload ns instead
          :resources (resources/make offer)}))
 

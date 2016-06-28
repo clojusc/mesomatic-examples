@@ -33,6 +33,4 @@
   :profiles {
     :dev {
       :source-paths ["dev-resources/src"]
-      :repl-options {:init-ns clojusc.mesomatic.examples.dev}
-    }
-    })
+      :repl-options {:init-ns clojusc.mesomatic.examples.dev}}})
