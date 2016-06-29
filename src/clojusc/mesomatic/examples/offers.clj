@@ -17,7 +17,8 @@
 (defn hit-limits?
   ""
   [limits status]
-  (if (or (< (:remaining-cpus status) (:cpus-per-task limits))
+  (if (or (>= (:launched-tasks status) (:total-tasks limits))
+          (< (:remaining-cpus status) (:cpus-per-task limits))
           (< (:remaining-mem status) (:mem-per-task limits)))
     (do
       (log/debug "Hit resource limit.")
@@ -35,6 +36,7 @@
   [status rsrcs]
   (log/debug "Updating status with rsrcs:" rsrcs)
   (-> status
+      (update :launched-tasks inc)
       (update :remaining-cpus (partial - (:cpus rsrcs)))
       (update :remaining-mem (partial - (:mem rsrcs)))))
 
@@ -42,7 +44,8 @@
   ""
   [state data limits offers]
   (loop [status {:remaining-cpus 0
-                 :remaining-mem 0}
+                 :remaining-mem 0
+                 :launched-tasks 0}
          index 1
          [offer & remaining-offers] offers
          tasks [(process-one state data limits status index offer)]]
@@ -65,7 +68,11 @@
 (defn process-all
   ""
   [state data limits offers]
-  (into [] (loop-offers state data limits offers)))
+  (into [] (loop-offers
+             state
+             data
+             (assoc limits :total-tasks (:total-tasks state))
+             offers)))
 
 (defn get-ids
   ""

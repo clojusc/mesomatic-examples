@@ -98,17 +98,20 @@
       (types/->pb :TaskStatus {:task-id {:value task-id}
                                :executor-id executor-id
                                :state :task-running
+                               :reason nil
                                :healthy true}))
     (send-log-info state (str "Running task " task-id))
 
-    ;; This is where one would perform the requested task
-    ;; ...
+    ;; This is where one would perform the requested task ...
+    (Thread/sleep 500)
+    ;; ... task complete
 
     (executor/send-status-update!
       (:driver state)
       (types/->pb :TaskStatus {:task-id {:value task-id}
                                :executor-id executor-id
                                :state :task-finished
+                               :reason nil
                                :healthy true}))
     (send-log-info state (str "Finished task " task-id))))
 
@@ -122,7 +125,9 @@
       (:driver state)
       (types/->pb :TaskStatus {:task-id {:value task-id}
                                :executor-id executor-id
-                               :state :task-failed}))
+                               :reason :reason-command-executor-failed
+                               :state :task-failed
+                               :healthy false?}))
     (send-log-info state (format "Task %s failed" task-id))))
 
 
@@ -169,8 +174,9 @@
     (log/debug "Task id:" task-id)
     (send-log-trace state (str "Task payload: " (pprint payload)))
     (-> (run-task task-id state payload)
-        (Thread.)
-        (.start))
+        ;(Thread.)
+        ;(.start)
+        )
     state))
 
 (defmethod handle-msg :kill-task

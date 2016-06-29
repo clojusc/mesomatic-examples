@@ -28,7 +28,8 @@
                          :checkpoint true})
 (def limits
   {:cpus-per-task 1
-   :mem-per-task 128})
+   :mem-per-task 128
+   :total-tasks nil})
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Payload utility functions
@@ -118,6 +119,11 @@
               "Framework %s got message from executor %s (slave=%s): %s"
               framework-id executor-id slave-id bytes))))
 
+(defn get-task-state
+  ""
+  [payload]
+  (get-in payload [:status :state]))
+
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; State utility functions
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -140,6 +146,43 @@
   ""
   [state]
   (:exec-info state))
+
+;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+;;; General utility functions
+;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+(defn do-unhealthy-status
+  ""
+  [state-name state payload]
+  (do
+    (log/errorf "%s - %s"
+                state-name
+                (get-error-msg payload))
+    (a/close! (get-channel state))
+    (scheduler/stop! (get-driver state))
+    (util/finish :exit-code 127)
+    state))
+
+(defn check-task-finished
+  ""
+  [state payload]
+  (if (= (get-task-state payload) :task-finished)
+    (let [finished (inc (:finished-tasks state))]
+      (log/info "Finished tasks:" finished)
+      (assoc state :finished-tasks finished))
+    state))
+
+(defn check-task-abort
+  ""
+  [state payload]
+  state)
+
+(defn do-healthy-status
+  ""
+  [state payload]
+  (-> state
+      (check-task-finished payload)
+      (check-task-abort payload)))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Framework callbacks
@@ -214,21 +257,14 @@
   [state payload]
   (let [status (get-status payload)
         state-name (get-state payload)]
-    (log/info "Handling :status-update message ...")
-    (log/info "Got state:" state-name)
-    (log/trace "Got status:" (pprint status))
-    (log/debug "Got status info:" (pprint payload))
-    (log/debug "Bytes:" (pprint (get-bytes payload)))
-    (log/debug "UUID:" (pprint (.toStringUtf8 (get-in payload [:status :uuid]))))
+    (log/infof "Handling :status-update message with state '%s' ..."
+               state-name)
+    (log/debug "Got status:" (pprint status))
+    (log/trace "Got status info:" (pprint payload))
     (if-not (healthy? payload)
-      (do
-        (log/errorf "%s - %s"
-                    state-name
-                    (get-error-msg payload))
-        (a/close! (get-channel state))
-        (scheduler/stop! (get-driver state))
-        (util/finish :exit-code 127)))
-    state))
+      (do-unhealthy-status state-name state payload)
+      (do-healthy-status state payload))))
+
 
 (defmethod handle-msg :disconnected
   [state payload]
@@ -287,7 +323,7 @@
 
 (defn run
   "This is the function that actually runs the framework."
-  [master]
+  [master task-count]
   (log/info "Running example framework ...")
   (let [ch (chan)
         sched (async-scheduler/scheduler ch)
@@ -301,5 +337,6 @@
     (log/debug "Reducing over example scheduler channel messages ...")
     (a/reduce handle-msg {:driver driver
                           :channel ch
-                          :exec-info nil} ch)
+                          :exec-info nil
+                          :total-tasks task-count} ch)
     (scheduler/join! driver)))
