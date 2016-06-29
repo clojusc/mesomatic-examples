@@ -1,4 +1,4 @@
-(ns clojusc.mesomatic.examples.executor
+(ns clojusc.mesomatic.examples.standard.executor
   ""
   (:require [clojure.core.async :as a :refer [chan <! go]]
             [clojure.string :as string]

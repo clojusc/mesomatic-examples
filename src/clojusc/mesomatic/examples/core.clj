@@ -4,9 +4,10 @@
             [clojure.tools.logging :as log]
             [leiningen.core.project :as lein-prj]
             [clojusc.twig :as logger]
-            [clojusc.mesomatic.examples.exception-framework :as ex-framework]
-            [clojusc.mesomatic.examples.executor :as executor]
-            [clojusc.mesomatic.examples.framework :as framework])
+            [clojusc.mesomatic.examples.standard.executor :as std-executor]
+            [clojusc.mesomatic.examples.standard.framework :as std-framework]
+            [clojusc.mesomatic.examples.exception-only.framework
+             :as excp-framework])
   (:gen-class))
 
 (defn get-config
@@ -44,6 +45,6 @@
     (log/debug "Using master:" master)
     (log/debug "Got task-type:" task-type)
     (condp = task-type
-      "executor" (executor/run master)
-      "framework" (framework/run master)
-      "exception-framework" (ex-framework/run master))))
+      "executor" (std-executor/run master)
+      "framework" (std-framework/run master)
+      "exception-framework" (excp-framework/run master))))

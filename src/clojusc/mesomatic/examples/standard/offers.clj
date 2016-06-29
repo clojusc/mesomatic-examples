@@ -1,10 +1,10 @@
-(ns clojusc.mesomatic.examples.offers
+(ns clojusc.mesomatic.examples.standard.offers
   ""
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]
             [clojusc.twig :refer [pprint]]
-            [clojusc.mesomatic.examples.resources :as resources]
-            [clojusc.mesomatic.examples.task :as task]
+            [clojusc.mesomatic.examples.standard.resources :as resources]
+            [clojusc.mesomatic.examples.standard.task :as task]
             [clojusc.mesomatic.examples.util :as util]))
 
 (defn process-one
