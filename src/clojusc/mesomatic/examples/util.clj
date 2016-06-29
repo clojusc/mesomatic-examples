@@ -3,8 +3,7 @@
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]
             [leiningen.core.main :as lein]
-            [clojusc.twig :refer [pprint]]
-            [clojusc.mesomatic.examples.resources :as resources])
+            [clojusc.twig :refer [pprint]])
   (:import java.util.UUID))
 
 (defn get-uuid

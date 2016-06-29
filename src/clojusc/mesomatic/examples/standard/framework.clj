@@ -1,4 +1,4 @@
-(ns clojusc.mesomatic.examples.framework
+(ns clojusc.mesomatic.examples.standard.framework
   ""
   (:require [clojure.core.async :as a :refer [chan <! go]]
             [clojure.string :as string]
@@ -8,9 +8,9 @@
             [mesomatic.scheduler :as scheduler :refer [scheduler-driver]]
             [mesomatic.types :as types]
             [clojusc.twig :refer [pprint]]
-            [clojusc.mesomatic.examples.executor :as example-executor]
-            [clojusc.mesomatic.examples.offers :as offers]
-            [clojusc.mesomatic.examples.task :as task]
+            [clojusc.mesomatic.examples.standard.executor :as example-executor]
+            [clojusc.mesomatic.examples.standard.offers :as offers]
+            [clojusc.mesomatic.examples.standard.task :as task]
             [clojusc.mesomatic.examples.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
