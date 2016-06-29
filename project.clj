@@ -12,7 +12,11 @@
                  [leiningen-core "2.5.3"]]
   :plugins [[lein-codox "0.9.1"]
             [lein-simpleton "1.3.0"]]
-  :aliases {"mesomatic" ["run" "-m" "clojusc.mesomatic.examples.core"]}
+  :aliases {"mesomatic"
+            ^{:doc "Command line interface for mesomatic-examples.
+           For more info run `lein mesomatic --help`\n"}
+            ^:pass-through-help
+            ["run" "-m" "clojusc.mesomatic.examples.core"]}
   :mesomatic-examples {
     :log-namespaces [clojusc.mesomatic.examples]
     :log-level :debug}
@@ -29,6 +33,4 @@
   :profiles {
     :dev {
       :source-paths ["dev-resources/src"]
-      :repl-options {:init-ns clojusc.mesomatic.examples.dev}
-    }
-    })
+      :repl-options {:init-ns clojusc.mesomatic.examples.dev}}})

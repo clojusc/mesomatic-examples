@@ -9,6 +9,7 @@
             [mesomatic.scheduler :as scheduler]
             [mesomatic.types :as types]
             [clojusc.twig :as logger]
+            [clojusc.mesomatic.examples.core :as core]
             [clojusc.mesomatic.examples.executor :as example-executor]
             [clojusc.mesomatic.examples.framework :as example-framework]
             [clojusc.mesomatic.examples.util :as util]))

@@ -43,8 +43,13 @@ running on your machine (or cluster):
 * The native Mesos library (matching the version used in this project).
 
 The latest version of these examples is built against Mesos 0.28.2 and
-mesomatic 0.28.0-r0. You may look at previous releases to see if there are
-older versions of Mesos supported (should you be interested).
+a mesomatic 0.28.0-r0. However, since there are Mesomatic features missing
+and bugs fixed which haven't yet been merged upstream, you will need to clone
+the fork that has these:
+ * https://github.com/clojusc/mesomatic
+
+Note that the default branch, ``deploy``, has merged all of the feature and
+bug fix branches.
 
 All other dependencies (including the Java bindings) are downloaded
 automatically by ``lein`` when you run the examples.
@@ -69,7 +74,7 @@ the following
 
 then one of the techniques you may employ to address this is setting the
 ``MESOS_NATIVE_JAVA_LIBRARY`` environment variable in your OS shell. For
-example, if you have built Mesos in ``/opt/mesos/0.28.2``
+example, if you have built Mesos in ``/opt/mesos/0.28.2/build``, you can run:
 
 ```bash
 $ export MESOS_NATIVE_JAVA_LIBRARY=/opt/mesos/0.28.2/build/src/.libs/libmesos.so

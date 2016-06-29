@@ -7,7 +7,8 @@
             [clojusc.mesomatic.examples.standard.executor :as std-executor]
             [clojusc.mesomatic.examples.standard.framework :as std-framework]
             [clojusc.mesomatic.examples.exception-only.framework
-             :as excp-framework])
+             :as excp-framework]
+            [clojusc.mesomatic.examples.util :as util])
   (:gen-class))
 
 (defn get-config
@@ -15,18 +16,36 @@
   []
   (:mesomatic-examples (lein-prj/read)))
 
+(defn usage
+  ""
+  []
+  (println)
+  (-> 'clojusc.mesomatic.examples.core
+      (util/get-docstring '-main)
+      (println)))
+
 (defn -main
-  "It is expected that this function be called from ``lein`` in the following
-  manner:
+  "It is expected that this function be called from ``lein`` in one of the
+  two following manners:
 
   ```
   $ lein mesomatic 127.0.0.1:5050 <task type>
+  ```
+
+  or
+
+  ```
+  $ lein mesomatic 127.0.0.1:5050 <task type> <task count>
   ```
 
   where ``<task-type>`` is one of:
 
   * ``executor``
   * ``framework``
+
+  and ``<task count>`` is an integer representing the number of times a task
+  will be run. If a task count is not provided, a default value of `5` is
+  used instead.
 
   That being said, only Mesos should call with the ``executor`` task type;
   calling humans will only call with the ``framework`` task type.
@@ -38,13 +57,19 @@
   :aliases {\"mesomatic\" [\"run\" \"-m\" \"mesomatic-examples.core\"]}
   ```
   "
-  [master task-type]
-  (let [cfg (get-config)]
-    (logger/set-level! (:log-namespaces cfg) (:log-level cfg))
-    (log/info "Running a mesomatic example!")
-    (log/debug "Using master:" master)
-    (log/debug "Got task-type:" task-type)
-    (condp = task-type
-      "executor" (std-executor/run master)
-      "framework" (std-framework/run master)
-      "exception-framework" (excp-framework/run master))))
+  ([flag]
+    (case flag
+      "--help" (usage)
+      "-h" (usage)))
+  ([master task-type]
+    (-main master task-type 5))
+  ([master task-type task-count]
+    (let [cfg (get-config)]
+      (logger/set-level! (:log-namespaces cfg) (:log-level cfg))
+      (log/info "Running a mesomatic example!")
+      (log/debug "Using master:" master)
+      (log/debug "Got task-type:" task-type)
+      (condp = task-type
+        "executor" (std-executor/run master)
+        "framework" (std-framework/run master task-count)
+        "exception-framework" (excp-framework/run master)))))
