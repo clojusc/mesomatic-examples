@@ -265,7 +265,6 @@
       (do-unhealthy-status state-name state payload)
       (do-healthy-status state payload))))
 
-
 (defmethod handle-msg :disconnected
   [state payload]
   (log/infof "Framework %s disconnected." (get-framework-id payload))
