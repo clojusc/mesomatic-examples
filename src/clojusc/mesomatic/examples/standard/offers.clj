@@ -28,6 +28,8 @@
 (defn quit-loop?
   ""
   [limits status offers]
+  (log/debugf "quit-loop check:\nlimits=\n%s \nstatus=%s \noffer-count=%s"
+             limits status (count offers))
   (or (hit-limits? limits status)
       (empty? offers)))
 
