@@ -1,6 +1,6 @@
 # mesomatic-examples
 
-*A Clojure Port of the Mesos Java Example*
+*A Clojure Port of the Mesos Java Examples (and more)*
 
 [![][mesos-logo]][mesos-logo-large]
 
