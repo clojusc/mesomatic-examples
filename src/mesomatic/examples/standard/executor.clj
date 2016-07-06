@@ -163,9 +163,8 @@
     (log/debug "Task id:" task-id)
     (send-log-trace state (str "Task payload: " (pprint payload)))
     (-> (run-task task-id state payload)
-        ;(Thread.)
-        ;(.start)
-        )
+        (Thread.)
+        (.start))
     state))
 
 (defmethod handle-msg :kill-task
