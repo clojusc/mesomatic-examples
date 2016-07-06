@@ -154,6 +154,7 @@
 (defn do-unhealthy-status
   ""
   [state-name state payload]
+  (log/debug "Doing unhealthy check ...")
   (do
     (log/errorf "%s - %s"
                 state-name
@@ -167,9 +168,9 @@
   ""
   [state payload]
   (if (= (get-task-state payload) :task-finished)
-    (let [finished (inc (:finished-tasks state))]
-      (log/info "Finished tasks:" finished)
-      (assoc state :finished-tasks finished))
+    (let [finished (inc (:tasks-finished state))]
+      (log/info "Tasks finished:" finished)
+      (assoc state :tasks-finished finished))
     state))
 
 (defn check-task-abort
@@ -180,6 +181,7 @@
 (defn do-healthy-status
   ""
   [state payload]
+  (log/debug "Doing healthy check ...")
   (-> state
       (check-task-finished payload)
       (check-task-abort payload)))
@@ -259,8 +261,9 @@
         state-name (get-state payload)]
     (log/infof "Handling :status-update message with state '%s' ..."
                state-name)
-    (log/debug "Got status:" (pprint status))
+    (log/trace "Got status:" (pprint status))
     (log/trace "Got status info:" (pprint payload))
+    (scheduler/acknowledge-status-update (get-driver state) status)
     (if-not (healthy? payload)
       (do-unhealthy-status state-name state payload)
       (do-healthy-status state payload))))
@@ -337,5 +340,6 @@
     (a/reduce handle-msg {:driver driver
                           :channel ch
                           :exec-info nil
-                          :total-tasks task-count} ch)
+                          :total-tasks task-count
+                          :tasks-finished 0} ch)
     (scheduler/join! driver)))
