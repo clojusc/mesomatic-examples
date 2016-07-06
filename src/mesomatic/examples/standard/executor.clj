@@ -93,18 +93,21 @@
 (defn update-task-success
   ""
   [task-id state payload]
-  (let [executor-id (get-executor-id payload)]
+  (let [executor-id (get-executor-id payload)
+        driver (:driver state)]
     (executor/send-status-update!
-      (:driver state)
+      driver
       (task/status-running executor-id task-id))
     (send-log-info state (str "Running task " task-id))
 
     ;; This is where one would perform the requested task:
     ;; ...
+    (Thread/sleep (rand-int 500))
+    ;; ...
     ;; Task complete.
 
     (executor/send-status-update!
-      (:driver state)
+      driver
       (task/status-finished executor-id task-id))
     (send-log-info state (str "Finished task " task-id))))
 
@@ -118,7 +121,6 @@
       (:driver state)
       (task/status-failed executor-id task-id))
     (send-log-info state (format "Task %s failed" task-id))))
-
 
 (defn run-task
   ""
