@@ -16,15 +16,15 @@
             ^{:doc "Command line interface for mesomatic-examples.
            For more info run `lein mesomatic --help`\n"}
             ^:pass-through-help
-            ["run" "-m" "clojusc.mesomatic.examples.core"]}
+            ["run" "-m" "mesomatic.examples.core"]}
   :mesomatic-examples {
-    :log-namespaces [clojusc.mesomatic.examples]
+    :log-namespaces [mesomatic.examples]
     :log-level :debug}
   :codox {
     :project {
       :name "mesomatic-examples"
       :description "A Clojure Port of the Mesos Java Examples"}
-    :namespaces [#"^clojusc.mesomatic.examples\."]
+    :namespaces [#"^mesomatic.examples\."]
     :output-path "docs/build"
     :doc-paths ["docs"]
     :metadata {
@@ -33,4 +33,4 @@
   :profiles {
     :dev {
       :source-paths ["dev-resources/src"]
-      :repl-options {:init-ns clojusc.mesomatic.examples.dev}}})
+      :repl-options {:init-ns mesomatic.examples.dev}}})

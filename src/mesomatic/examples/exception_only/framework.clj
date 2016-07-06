@@ -1,4 +1,4 @@
-(ns clojusc.mesomatic.examples.exception-only.framework
+(ns mesomatic.examples.exception-only.framework
   ""
   (:require [clojure.core.async :as a :refer [chan <! go]]
             [clojure.string :as string]

@@ -1,4 +1,4 @@
-(ns clojusc.mesomatic.examples.util
+(ns mesomatic.examples.util
   ""
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]

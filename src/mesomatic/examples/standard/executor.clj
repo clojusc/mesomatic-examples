@@ -1,4 +1,4 @@
-(ns clojusc.mesomatic.examples.standard.executor
+(ns mesomatic.examples.standard.executor
   ""
   (:require [clojure.core.async :as a :refer [chan <! go]]
             [clojure.string :as string]
@@ -7,8 +7,8 @@
             [mesomatic.async.executor :as async-executor]
             [mesomatic.executor :as executor :refer [executor-driver]]
             [mesomatic.types :as types]
-            [clojusc.mesomatic.examples.standard.task :as task]
-            [clojusc.mesomatic.examples.util :as util]))
+            [mesomatic.examples.standard.task :as task]
+            [mesomatic.examples.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Constants and Data

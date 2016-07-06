@@ -1,14 +1,13 @@
-(ns clojusc.mesomatic.examples.core
+(ns mesomatic.examples.core
   "The namespace which holds the entry point for the Mesomatic examples."
   (:require [clojure.core.async :refer [chan <! go] :as a]
             [clojure.tools.logging :as log]
             [leiningen.core.project :as lein-prj]
             [clojusc.twig :as logger]
-            [clojusc.mesomatic.examples.standard.executor :as std-executor]
-            [clojusc.mesomatic.examples.standard.framework :as std-framework]
-            [clojusc.mesomatic.examples.exception-only.framework
-             :as excp-framework]
-            [clojusc.mesomatic.examples.util :as util])
+            [mesomatic.examples.standard.executor :as std-executor]
+            [mesomatic.examples.standard.framework :as std-framework]
+            [mesomatic.examples.exception-only.framework :as excp-framework]
+            [mesomatic.examples.util :as util])
   (:gen-class))
 
 (defn get-config
@@ -20,7 +19,7 @@
   ""
   []
   (println)
-  (-> 'clojusc.mesomatic.examples.core
+  (-> 'mesomatic.examples.core
       (util/get-docstring '-main)
       (println)))
 
