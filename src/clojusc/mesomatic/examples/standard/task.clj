@@ -34,3 +34,35 @@
   (-> task
       (types/pb->data)
       :name))
+
+(defn status-running [executor-id task-id]
+  (types/->pb :TaskStatus
+    {:task-id {:value task-id}
+     :executor-id executor-id
+     :state :task-running
+     ;; If we don't set a default :reason, Mesos ProtoBufs uses the default of
+     ;; 0 which is actually :reason-command-executor-failed, and we don't want
+     ;; that being the default. Mesos ProtoBufs sets the optional value of
+     ;; reason to 10, which is REASON_SLAVE_DISCONNECTED, so that's what we use
+     ;; here. Note that a nil value gets translated into 0, which is
+     ;; REASON_COMMAND_EXECUTOR_FAILED, so that is also not used.
+     :reason :reason-slave-disconnected
+     :healthy true}))
+
+(defn status-finished [executor-id task-id]
+  (types/->pb :TaskStatus
+    {:task-id {:value task-id}
+     :executor-id executor-id
+     :state :task-finished
+     ;; See the in-line code comment in status-running
+     ;; for an explanation of the :reason value below.
+     :reason :reason-slave-disconnected
+     :healthy true}))
+
+(defn status-failed [executor-id task-id]
+  (types/->pb :TaskStatus
+    {:task-id {:value task-id}
+     :executor-id executor-id
+     :reason :reason-command-executor-failed
+     :state :task-failed
+     :healthy false}))

@@ -7,6 +7,7 @@
             [mesomatic.async.executor :as async-executor]
             [mesomatic.executor :as executor :refer [executor-driver]]
             [mesomatic.types :as types]
+            [clojusc.mesomatic.examples.standard.task :as task]
             [clojusc.mesomatic.examples.util :as util]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -95,24 +96,16 @@
   (let [executor-id (get-executor-id payload)]
     (executor/send-status-update!
       (:driver state)
-      (types/->pb :TaskStatus {:task-id {:value task-id}
-                               :executor-id executor-id
-                               :state :task-running
-                               :reason nil
-                               :healthy true}))
+      (task/status-running executor-id task-id))
     (send-log-info state (str "Running task " task-id))
 
-    ;; This is where one would perform the requested task ...
-    (Thread/sleep 500)
-    ;; ... task complete
+    ;; This is where one would perform the requested task:
+    ;; ...
+    ;; Task complete.
 
     (executor/send-status-update!
       (:driver state)
-      (types/->pb :TaskStatus {:task-id {:value task-id}
-                               :executor-id executor-id
-                               :state :task-finished
-                               :reason nil
-                               :healthy true}))
+      (task/status-finished executor-id task-id))
     (send-log-info state (str "Finished task " task-id))))
 
 (defn update-task-fail
@@ -123,11 +116,7 @@
                                   task-id (pprint e)))
     (executor/send-status-update!
       (:driver state)
-      (types/->pb :TaskStatus {:task-id {:value task-id}
-                               :executor-id executor-id
-                               :reason :reason-command-executor-failed
-                               :state :task-failed
-                               :healthy false?}))
+      (task/status-failed executor-id task-id))
     (send-log-info state (format "Task %s failed" task-id))))
 
 
