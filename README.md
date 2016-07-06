@@ -45,8 +45,13 @@ running on your machine (or cluster):
 The latest version of these examples is built against Mesos 0.28.2 and
 a mesomatic 0.28.0-r0. However, since there are Mesomatic features missing
 and bugs fixed which haven't yet been merged upstream, you will need to clone
-the fork that has these:
- * https://github.com/clojusc/mesomatic
+the fork that has these (from the ``mesomatic-examples`` clone directory):
+
+```
+$ mkdir checkouts
+$ cd checkouts
+$ git clone https://github.com/clojusc/mesomatic
+```
 
 Note that the default branch, ``deploy``, has merged all of the feature and
 bug fix branches.
