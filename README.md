@@ -11,6 +11,8 @@
 * [Dependencies](#dependencies-)
 * [Set Up](#set-up-)
 * [Usage](#usage-)
+  * [Java Framework Port](java-framework-port-)
+  * [Java Exception Framework Port](java-exception-framework-port-)
 * [Documentation](#documentation-)
 * [License](#license-)
 
@@ -88,9 +90,15 @@ $ export MESOS_NATIVE_JAVA_LIBRARY=/opt/mesos/0.28.2/build/src/.libs/libmesos.so
 With the necessary set up complete, from the ``mesomatic-examples`` clone
 directory you can run the following examples:
 
+
+### Java Framework Port [&#x219F;](#contents)
+
 ```bash
 $ lein mesomatic 127.0.0.1:5050 framework
 ```
+
+
+### Java Exception Framework Port [&#x219F;](#contents)
 
 ```bash
 $ lein mesomatic 127.0.0.1:5050 exception-framework
