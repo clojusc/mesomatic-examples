@@ -20,7 +20,7 @@
 ## About [&#x219F;](#contents)
 
 This project started as a port of the standard [Mesos Java
-examples](https://github.com/apache/mesos/tree/master/src/examples/java) to Clojure and [Mesomatic](https://github.com/pyr/mesomatic). Since then, other examples have started to make their way into the code base, and the repo is now home to several Mesomatic examples.
+examples](https://github.com/apache/mesos/tree/master/src/examples/java) to Clojure and [Mesomatic](https://github.com/pyr/mesomatic). Since then, other examples have begun making their way into the codebase, and the repo is now home to several Mesomatic examples.
 
 So far, these include:
 
