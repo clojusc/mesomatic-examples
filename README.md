@@ -1,11 +1,8 @@
-# mesomatic-examples
+# mesomatic-examples  [![Build Status][travis-badge]][travis][![Dependencies Status][deps-badge]][deps][![Clojars Project][clojars-badge]][clojars][![Clojure version][clojure-v]](project.clj)
 
 *A Clojure Port of the Mesos Java Examples (and more)*
 
-[![][mesos-logo]][mesos-logo-large]
-
-[mesos-logo]: resources/images/Apache-Mesos-logo-x250.png
-[mesos-logo-large]: resources/images/Apache-Mesos-logo-x1000.png
+[![][logo]][logo-large]
 
 
 #### Contents
@@ -112,3 +109,18 @@ The project's auto-generated documentation (such that it is) is available here:
 Copyright © 2016 Duncan McGreggor
 
 Apache License, Version 2.0.
+
+
+<!-- Named page links below: /-->
+
+[travis]: https://travis-ci.org/clojusc/mesomatic-examples
+[travis-badge]: https://travis-ci.org/clojusc/mesomatic-examples.png?branch=master
+[deps]: http://jarkeeper.com/clojusc/mesomatic-examples
+[deps-badge]: http://jarkeeper.com/clojusc/mesomatic-examples/status.svg
+[logo]: resources/images/Apache-Mesos-logo-x250.png
+[logo-large]: resources/images/Apache-Mesos-logo-x1000.png
+[tag-badge]: https://img.shields.io/github/tag/clojusc/mesomatic-examples.svg?maxAge=2592000
+[tag]: https://github.com/clojusc/mesomatic-examples/tags
+[clojure-v]: https://img.shields.io/badge/clojure-1.8.0-blue.svg
+[clojars]: https://clojars.org/clojusc/mesomatic-examples
+[clojars-badge]: https://img.shields.io/clojars/v/clojusc/mesomatic-examples.svg
