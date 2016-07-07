@@ -1,0 +1,17 @@
+language: clojure
+script:
+  - lein compile
+jdk:
+  - oraclejdk8
+  #- oraclejdk7
+  - openjdk6
+  - openjdk7
+  #- openjdk8
+#addons:
+#  apt:
+#    sources:
+#      - 
+notifications:
+  email:
+      - oubiwann@gmail.com
+
