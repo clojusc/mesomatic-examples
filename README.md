@@ -105,6 +105,21 @@ $ lein mesomatic 127.0.0.1:5050 exception-framework
 ```
 
 
+### Java Multiple-Executors Framework Port [&#x219F;](#contents)
+
+TBD
+
+
+### 'Hello, World!' Framework [&#x219F;](#contents)
+
+TBD
+
+
+### 'Hello, World!' Docker Framework [&#x219F;](#contents)
+
+TBD
+
+
 ## Documentation [&#x219F;](#contents)
 
 The project's auto-generated documentation (such that it is) is available here:
