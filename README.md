@@ -19,11 +19,10 @@
 
 ## About [&#x219F;](#contents)
 
-These examples are a Clojure and [Mesomatic](https://github.com/pyr/mesomatic)
-port of the official [Mesos Java
-examples](https://github.com/apache/mesos/tree/master/src/examples/java).
+This project started as a port of the standard [Mesos Java
+examples](https://github.com/apache/mesos/tree/master/src/examples/java) to Clojure and [Mesomatic](https://github.com/pyr/mesomatic). Since then, other examples have started to make their way into the code base, and the repo is now home to several Mesomatic examples.
 
-So far, the examples include:
+So far, these include:
 
 * framework (IN PROGRESS) - [add description]
 * framework-exception - a minimalist framework that only shows how an exception is handled by the Mesos framework
