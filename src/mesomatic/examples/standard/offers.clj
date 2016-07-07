@@ -9,7 +9,7 @@
 
 (defn process-one
   ""
-  [state data limits status index offer]
+  [state data status index offer]
   (let [task-info (task/make-map state data index offer)]
     (log/trace "Got task info:" (pprint task-info))
     task-info))
@@ -17,13 +17,12 @@
 (defn hit-limits?
   ""
   [limits status]
-  (if (or (>= (:launched-tasks status) (:total-tasks limits))
-          (< (:remaining-cpus status) (:cpus-per-task limits))
+  (if (or (< (:remaining-cpus status) (:cpus-per-task limits))
           (< (:remaining-mem status) (:mem-per-task limits)))
     (do
       (log/debug "Hit resource limit.")
       true)
-      false))
+    false))
 
 (defn quit-loop?
   ""
@@ -38,42 +37,38 @@
   [status rsrcs]
   (log/debug "Updating status with rsrcs:" rsrcs)
   (-> status
-      (update :launched-tasks inc)
       (update :remaining-cpus (partial - (:cpus rsrcs)))
       (update :remaining-mem (partial - (:mem rsrcs)))))
 
 (defn loop-offers
   ""
-  [state data limits offers]
+  [state data offers]
   (loop [status {:remaining-cpus 0
-                 :remaining-mem 0
-                 :launched-tasks 0}
+                 :remaining-mem 0}
          index 1
          [offer & remaining-offers] offers
-         tasks [(process-one state data limits status index offer)]]
+         tasks [(process-one state data status index offer)]]
     (let [rsrcs (resources/sum offer)
           status (update-status status rsrcs)]
-      (if (quit-loop? limits status remaining-offers)
+      (if (quit-loop? (:limits state) status remaining-offers)
         (do
           (log/debug "Quitting loop ...")
           tasks)
         (do
           (log/debug "Iterating offers ...")
           (recur
-            ;; XXX update remaining resources
             status
             (inc index)
             remaining-offers
             (conj tasks
-                  (process-one state data limits status index offer))))))))
+                  (process-one state data status index offer))))))))
 
 (defn process-all
   ""
-  [state data limits offers]
+  [state data offers]
   (into [] (loop-offers
              state
              data
-             (assoc limits :total-tasks (:total-tasks state))
              offers)))
 
 (defn get-ids

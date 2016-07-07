@@ -27,9 +27,10 @@
                          :principal "test-framework-clojure"
                          :checkpoint true})
 (def limits
+  "Note that :max-tasks gets set via an argument passed to the `run` function."
   {:cpus-per-task 1
    :mem-per-task 128
-   :total-tasks nil})
+   :max-tasks nil})
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Payload utility functions
@@ -152,6 +153,11 @@
   [state]
   (:exec-info state))
 
+(defn get-max-tasks
+  ""
+  [state]
+  (get-in state [:limits :max-tasks]))
+
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; General utility functions
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -173,9 +179,16 @@
   ""
   [state payload]
   (if (= (get-task-state payload) :task-finished)
-    (let [finished (inc (:tasks-finished state))]
-      (log/info "Tasks finished:" finished)
-      (assoc state :tasks-finished finished))
+    (let [task-count (inc (:launched-tasks state))
+          new-state (assoc state :launched-tasks task-count)]
+      (log/debug "Incremented task-count:" task-count)
+      (log/info "Tasks finished:" task-count)
+      (if (>= task-count (get-max-tasks state))
+        (do
+          (scheduler/stop! (get-driver state))
+          (util/finish :exit-code 0)
+          new-state)
+        new-state))
     state))
 
 (defn check-task-abort
@@ -193,6 +206,7 @@
                   (:source status)
                   (:message status))
       (scheduler/abort! (get-driver state))
+      (util/finish :exit-code 127)
       state)
     state))
 
@@ -239,7 +253,7 @@
                     master-info framework-id (util/cwd))]
     (log/info "Registered with framework id:" framework-id)
     (log/trace "Got master info:" (pprint master-info))
-    (log/trace "Got state info:" (pprint state))
+    (log/trace "Got state:" (pprint state))
     (log/trace "Got exec info:" (pprint exec-info))
     (assoc state :exec-info exec-info
                  :master-info master-info
@@ -256,10 +270,10 @@
   (log/trace "Got state:" (pprint state))
   (let [offers-data (get-offers payload)
         offer-ids (offers/get-ids offers-data)
-        tasks (offers/process-all state payload limits offers-data)
+        tasks (offers/process-all state payload offers-data)
         driver (get-driver state)]
     (log/trace "Got offers data:" offers-data)
-    (log/debug "Got offer IDs:" (map :value offer-ids))
+    (log/trace "Got offer IDs:" (map :value offer-ids))
     (log/trace "Got other payload:" (pprint (dissoc payload :offers)))
     (log/debug "Created tasks:"
                (string/join ", " (map task/get-pb-name tasks)))
@@ -280,6 +294,7 @@
         state-name (get-state payload)]
     (log/infof "Handling :status-update message with state '%s' ..."
                state-name)
+    (log/trace "Got state:" (pprint state))
     (log/trace "Got status:" (pprint status))
     (log/trace "Got status info:" (pprint payload))
     (scheduler/acknowledge-status-update (get-driver state) status)
@@ -359,6 +374,6 @@
     (a/reduce handle-msg {:driver driver
                           :channel ch
                           :exec-info nil
-                          :total-tasks task-count
-                          :tasks-finished 0} ch)
+                          :launched-tasks 0
+                          :limits (assoc limits :max-tasks task-count)} ch)
     (scheduler/join! driver)))
