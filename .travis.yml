@@ -1,7 +1,5 @@
 language: clojure
 sudo: false
-script:
-  - lein compile
 jdk:
   - oraclejdk8
   #- oraclejdk7
