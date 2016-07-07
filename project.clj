@@ -1,4 +1,4 @@
-(defproject clojusc/mesomatic-examples "0.1.0-SNAPSHOT"
+(defproject mesomatic-examples "0.1.0-SNAPSHOT"
   :description "A Clojure Port of the Mesos Java Example"
   :url "https://github.com/clojusc/mesomatic-examples"
   :license {
