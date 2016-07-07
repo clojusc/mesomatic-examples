@@ -11,8 +11,8 @@
 * [Dependencies](#dependencies-)
 * [Set Up](#set-up-)
 * [Usage](#usage-)
-  * [Java Framework Port](java-framework-port-)
-  * [Java Exception Framework Port](java-exception-framework-port-)
+  * [Java Framework Port](#java-framework-port-)
+  * [Java Exception Framework Port](#java-exception-framework-port-)
 * [Documentation](#documentation-)
 * [License](#license-)
 
