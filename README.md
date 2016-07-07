@@ -119,6 +119,11 @@ TBD
 TBD
 
 
+### 'Hello, World!' + Component Framework [&#x219F;](#contents)
+
+TBD
+
+
 ## Documentation [&#x219F;](#contents)
 
 The project's auto-generated documentation (such that it is) is available here:
