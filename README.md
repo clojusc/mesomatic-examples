@@ -29,6 +29,14 @@ So far, these include:
 
 We plan on adding the multi-executor framework as well. In addition to the standard Mesos Java examples, we'll be including a very simple "Hello, World" framework and a framework using a custom Docker container.
 
+Note that these examples, for the most part, attempt to demonstrate creating
+Mesos frameworks using base-bones Clojure (the exception to this is the
+example which demonstrates the use of the Component library to treat the
+framework like a system). Also, unlike the Java examples, these Mesomatic
+example don't create bash scripts to kick off executors and frameworks from
+the command-line. Instead, they use `lein mesomatic` aliases (defined in
+`project.clj`).
+
 
 ## Dependencies [&#x219F;](#contents)
 
