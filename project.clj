@@ -9,8 +9,8 @@
                  [clojusc/twig "0.2.1"]
                  [spootnik/mesomatic "0.28.0-r0"]
                  [spootnik/mesomatic-async "0.28.0-r0"]
-                 [leiningen-core "2.5.3"]]
-  :plugins [[lein-codox "0.9.1"]
+                 [leiningen-core "2.6.1"]]
+  :plugins [[lein-codox "0.9.5"]
             [lein-simpleton "1.3.0"]]
   :aliases {"mesomatic"
             ^{:doc "Command line interface for mesomatic-examples.
