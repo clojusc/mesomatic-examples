@@ -85,7 +85,7 @@
     true))
 
 (defn status-failed
-    ""
+  ""
   [executor-id task-id]
   (make-status
     executor-id

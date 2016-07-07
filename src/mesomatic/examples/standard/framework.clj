@@ -124,6 +124,11 @@
   [payload]
   (get-in payload [:status :state]))
 
+(defn get-task-id
+  ""
+  [payload]
+  (get-in payload [:status :task-id :value]))
+
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; State utility functions
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -176,7 +181,21 @@
 (defn check-task-abort
   ""
   [state payload]
-  state)
+  (if (or (= (get-task-state payload) :task-lost)
+          (= (get-task-state payload) :task-killed)
+          (= (get-task-state payload) :task-failed))
+    (let [status (:status payload)]
+      (log/errorf (str "Aborting because task %s is in unexpected state %s "
+                       "with reason %s from source %s with message '%s'")
+                  (get-task-id payload)
+                  (:state status)
+                  (:reason status)
+                  (:source status)
+                  (:message status))
+      (scheduler/abort! (get-driver state))
+      state)
+    state))
+
 
 (defn do-healthy-status
   ""
