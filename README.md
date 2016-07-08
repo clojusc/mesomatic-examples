@@ -14,6 +14,8 @@
 * [Usage](#usage-)
   * [Java Framework Port](#java-framework-port-)
   * [Java Exception Framework Port](#java-exception-framework-port-)
+  * ['Hello, World!' Framework](#XXX-)
+  * ['Hello, World!' Docker Framework](#XXX-)
 * [Documentation](#documentation-)
 * [License](#license-)
 
@@ -26,6 +28,7 @@ examples](https://github.com/apache/mesos/tree/master/src/examples/java) to Cloj
 So far, these include:
 
 * framework (IN PROGRESS) - [add description]
+* hello-framework (IN PROGRESS) - A highly simplified, mostly minimal example of Mesomatic in action
 * container-framework (IN PROGRESS) - [add description]
 * exception-framework - a minimalist framework that only shows how an exception is handled by the Mesos framework
 
@@ -121,7 +124,9 @@ TBD
 
 ### 'Hello, World!' Framework [&#x219F;](#contents)
 
-TBD
+```bash
+$ lein mesomatic 127.0.0.1:5050 hello-framework
+```
 
 
 ### 'Hello, World!' Docker Framework [&#x219F;](#contents)
