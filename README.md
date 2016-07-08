@@ -99,8 +99,12 @@ $ export MESOS_NATIVE_JAVA_LIBRARY=/opt/mesos/0.28.2/build/src/.libs/libmesos.so
 
 ## Usage [&#x219F;](#contents)
 
-With the necessary set up complete, from the ``mesomatic-examples`` clone
-directory you can run the following examples:
+With the necessary set up complete and after having changed directory to the
+the ``mesomatic-examples`` clone directory, you can run the various example
+as shown below. Note that the command line argument for the "master" is given
+as "127.0.0.1:5050", and that will only work for you if that's the IP and port
+your own Mesos install is running on. As such, be sure to update the commands
+below as needed for your environment.
 
 
 ### Java Framework Port [&#x219F;](#contents)
