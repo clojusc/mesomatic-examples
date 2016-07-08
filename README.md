@@ -26,7 +26,8 @@ examples](https://github.com/apache/mesos/tree/master/src/examples/java) to Cloj
 So far, these include:
 
 * framework (IN PROGRESS) - [add description]
-* framework-exception - a minimalist framework that only shows how an exception is handled by the Mesos framework
+* container-framework (IN PROGRESS) - [add description]
+* exception-framework - a minimalist framework that only shows how an exception is handled by the Mesos framework
 
 We plan on adding the multi-executor framework as well. In addition to the standard Mesos Java examples, we'll be including a very simple "Hello, World" framework and a framework using a custom Docker container.
 
@@ -125,7 +126,9 @@ TBD
 
 ### 'Hello, World!' Docker Framework [&#x219F;](#contents)
 
-TBD
+```bash
+$ lein mesomatic 127.0.0.1:5050 container-framework
+```
 
 
 ### 'Hello, World!' + Component Framework [&#x219F;](#contents)
