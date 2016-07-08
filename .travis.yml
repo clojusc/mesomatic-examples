@@ -1,5 +1,6 @@
 language: clojure
 sudo: false
+before_script: mkdir checkouts && cd checkouts && git clone https://github.com/clojusc/mesomatic.git
 jdk:
   - oraclejdk8
   #- oraclejdk7
