@@ -32,15 +32,16 @@ So far, these include:
 * container-framework (IN PROGRESS) - [add description]
 * exception-framework - a minimalist framework that only shows how an exception is handled by the Mesos framework
 
-We plan on adding the multi-executor framework as well. In addition to the standard Mesos Java examples, we'll be including a very simple "Hello, World" framework and a framework using a custom Docker container.
+We plan on adding the multi-executor framework as well a few other examples.
 
 Note that these examples, for the most part, attempt to demonstrate creating
-Mesos frameworks using base-bones Clojure (the exception to this is the
-example which demonstrates the use of the Component library to treat the
-framework like a system). Also, unlike the Java examples, these Mesomatic
-example don't create bash scripts to kick off executors and frameworks from
-the command-line. Instead, they use `lein mesomatic` aliases (defined in
-`project.clj`).
+Mesos frameworks using bare-bones Clojure (the exception to this is the
+example which will demonstrate the use of the
+[Component library](https://github.com/stuartsierra/component), allosing one
+to treat the framework like a system). Also, unlike the Java examples, none of
+these Mesomatic examples create bash scripts to kick off executors and 
+frameworks from the command-line. Instead, they use `lein mesomatic` aliases 
+(defined in `project.clj`).
 
 
 ## Dependencies [&#x219F;](#contents)
