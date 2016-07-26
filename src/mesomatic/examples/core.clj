@@ -82,4 +82,4 @@
         "framework" (std-framework/run master task-count)
         "exception-framework" (excp-framework/run master)
         "hello-executor" (hi-executor/run master)
-        "hello-framework" (hi-framework/run master task-count)))))
+        "hello-framework" (hi-framework/run master)))))

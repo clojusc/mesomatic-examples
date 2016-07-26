@@ -3,7 +3,7 @@
   (:require [clojure.tools.logging :as log]
             [clojure.string :as string]
             [clojusc.twig :refer [pprint]]
-            [mesomatic.examples.standard.resources :as resources]
+            [mesomatic.examples.common.resources :as resources]
             [mesomatic.examples.standard.task :as task]
             [mesomatic.examples.util :as util]))
 

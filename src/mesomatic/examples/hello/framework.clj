@@ -26,11 +26,6 @@
 (def framework-info-map {:name "'Hello, World!' Framework (Clojure)"
                          :principal "test-framework-clojure"
                          :checkpoint true})
-(def limits
-  "Note that :max-tasks gets set via an argument passed to the `run` function."
-  {:cpus-per-task 1
-   :mem-per-task 128
-   :max-tasks nil})
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Payload utility functions
@@ -105,21 +100,6 @@
   [payload]
   (.toStringUtf8 (get-in payload [:status :data])))
 
-(defn log-framework-msg
-  ""
-  [framework-id executor-id slave-id payload]
-  (let [bytes (String. (:data payload))
-        log-type? (partial string/includes? bytes)]
-    (cond
-      (log-type? "TRACE") (log/trace bytes)
-      (log-type? "DEBUG") (log/debug bytes)
-      (log-type? "INFO") (log/info bytes)
-      (log-type? "WARN") (log/warn bytes)
-      (log-type? "ERROR") (log/error bytes)
-      :else (log/infof
-              "Framework %s got message from executor %s (slave=%s): %s"
-              framework-id executor-id slave-id bytes))))
-
 (defn get-task-state
   ""
   [payload]
@@ -153,11 +133,6 @@
   [state]
   (:exec-info state))
 
-(defn get-max-tasks
-  ""
-  [state]
-  (get-in state [:limits :max-tasks]))
-
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; General utility functions
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -166,6 +141,8 @@
   ""
   [state-name state payload]
   (log/debug "Doing unhealthy check ...")
+  ;(log/warn "state: " (pprint state))
+  ;(log/warn "payload: " (pprint payload))
   (do
     (log/errorf "%s - %s"
                 state-name
@@ -181,9 +158,7 @@
   (if (= (get-task-state payload) :task-finished)
     (let [task-count (inc (:launched-tasks state))
           new-state (assoc state :launched-tasks task-count)]
-      (log/debug "Incremented task-count:" task-count)
-      (log/info "Tasks finished:" task-count)
-      (if (>= task-count (get-max-tasks state))
+      (if (> task-count 1)
         (do
           (scheduler/stop! (get-driver state))
           (util/finish :exit-code 0)
@@ -252,9 +227,6 @@
         exec-info (example-executor/cmd-info-map
                     master-info framework-id (util/cwd))]
     (log/info "Registered with framework id:" framework-id)
-    (log/trace "Got master info:" (pprint master-info))
-    (log/trace "Got state:" (pprint state))
-    (log/trace "Got exec info:" (pprint exec-info))
     (assoc state :exec-info exec-info
                  :master-info master-info
                  :framework-id {:value framework-id})))
@@ -267,20 +239,14 @@
 (defmethod handle-msg :resource-offers
   [state payload]
   (log/info "Handling :resource-offers message ...")
-  (log/trace "Got state:" (pprint state))
+  (log/warn "DEBUG:" (pprint payload))
   (let [offers-data (get-offers payload)
         offer-ids (offers/get-ids offers-data)
         tasks (offers/process-all state payload offers-data)
         driver (get-driver state)]
-    (log/trace "Got offers data:" offers-data)
-    (log/trace "Got offer IDs:" (map :value offer-ids))
-    (log/trace "Got other payload:" (pprint (dissoc payload :offers)))
-    (log/debug "Created tasks:"
-               (string/join ", " (map task/get-pb-name tasks)))
-    (log/tracef "Got payload for %d task(s): %s"
-                (count tasks)
-                (pprint (into [] (map pprint tasks))))
     (log/info "Launching tasks ...")
+    (log/warn "state: " (pprint state))
+    (log/warn "payload: " (pprint payload))
     (scheduler/accept-offers
       driver
       offer-ids
@@ -294,9 +260,6 @@
         state-name (get-state payload)]
     (log/infof "Handling :status-update message with state '%s' ..."
                state-name)
-    (log/trace "Got state:" (pprint state))
-    (log/trace "Got status:" (pprint status))
-    (log/trace "Got status info:" (pprint payload))
     (scheduler/acknowledge-status-update (get-driver state) status)
     (if-not (healthy? payload)
       (do-unhealthy-status state-name state payload)
@@ -304,42 +267,23 @@
 
 (defmethod handle-msg :disconnected
   [state payload]
-  (log/infof "Framework %s disconnected." (get-framework-id payload))
   state)
 
 (defmethod handle-msg :offer-rescinded
   [state payload]
-  (let [framework-id (get-framework-id state)
-        offer-id (get-offer-id payload)]
-    (log/infof "Offer %s rescinded from framework %s."
-               offer-id (get-framework-id payload))
-    state))
+  state)
 
 (defmethod handle-msg :framework-message
   [state payload]
-  (let [framework-id (get-framework-id state)
-        executor-id (get-executor-id payload)
-        slave-id (get-slave-id payload)]
-    (log-framework-msg framework-id executor-id slave-id payload)
-    state))
+  state)
 
 (defmethod handle-msg :slave-lost
   [state payload]
-  (let [slave-id (get-slave-id payload)]
-    (log/error "Framework %s lost connection with slave %s."
-               (get-framework-id payload)
-               slave-id)
-    state))
+  state)
 
 (defmethod handle-msg :executor-lost
   [state payload]
-  (let [executor-id (get-executor-id payload)
-        slave-id (get-slave-id payload)
-        status (get-status payload)]
-    (log/errorf (str "Framework lost connection with executor %s (slave=%s) "
-                     "with status code %s.")
-                executor-id slave-id status)
-    state))
+  state)
 
 (defmethod handle-msg :error
   [state payload]
@@ -359,7 +303,7 @@
 
 (defn run
   "This is the function that actually runs the framework."
-  [master task-count]
+  [master]
   (log/info "Running hello-world framework ...")
   (let [ch (chan)
         sched (async-scheduler/scheduler ch)
@@ -373,7 +317,5 @@
     (log/debug "Reducing over hello-world scheduler channel messages ...")
     (a/reduce handle-msg {:driver driver
                           :channel ch
-                          :exec-info nil
-                          :launched-tasks 0
-                          :limits (assoc limits :max-tasks task-count)} ch)
+                          :exec-info nil} ch)
     (scheduler/join! driver)))

@@ -34,7 +34,7 @@
   (into
     (info-map)
     {:framework-id {:value framework-id}
-     :command {:value (format "cd %s && %s mesomatic %s:%s executor"
+     :command {:value (format "cd %s && %s mesomatic %s:%s hello-executor"
                               cwd
                               lein
                               (:hostname master-info)
@@ -55,41 +55,6 @@
 ;;; Utility functions
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-(defn send-log
-  ""
-  [state level message]
-  (let [str-level (string/upper-case (name level))
-        msg (format "%s - %s" str-level message)
-        bytes (.getBytes (str "Message from executor: " msg))]
-    (if (= level :debug)
-      (log/debugf "Sending message to framework: %s ..." msg))
-    (executor/send-framework-message! (:driver state) bytes)))
-
-(defn send-log-trace
-  ""
-  [state message]
-  (send-log state :trace message))
-
-(defn send-log-debug
-  ""
-  [state message]
-  (send-log state :debug message))
-
-(defn send-log-info
-  ""
-  [state message]
-  (send-log state :info message))
-
-(defn send-log-warn
-  ""
-  [state message]
-  (send-log state :warn message))
-
-(defn send-log-error
-  ""
-  [state message]
-  (send-log state :error message))
-
 (defn update-task-success
   ""
   [task-id state payload]
@@ -98,7 +63,7 @@
     (executor/send-status-update!
       driver
       (task/status-running executor-id task-id))
-    (send-log-info state (str "Running task " task-id))
+    (log/info "Running task" task-id)
 
     ;; This is where one would perform the requested task:
     ;; ...
@@ -109,18 +74,18 @@
     (executor/send-status-update!
       driver
       (task/status-finished executor-id task-id))
-    (send-log-info state (str "Finished task " task-id))))
+    (log/info "Finished task " task-id)))
 
 (defn update-task-fail
   ""
   [task-id e state payload]
   (let [executor-id (get-executor-id payload)]
-    (send-log-error state (format "Got exception for task %s: %s"
-                                  task-id (pprint e)))
+    (log/errorf "Got exception for task %s: %s"
+                task-id (pprint e))
     (executor/send-status-update!
       (:driver state)
       (task/status-failed executor-id task-id))
-    (send-log-info state (format "Task %s failed" task-id))))
+    (log/infof "Task %s failed" task-id)))
 
 (defn run-task
   ""
@@ -144,26 +109,21 @@
 
 (defmethod handle-msg :registered
   [state payload]
-  (send-log-info state (str "Registered executor: " (get-executor-id payload)))
   state)
 
 (defmethod handle-msg :reregistered
   [state payload]
-  (send-log-info state
-                 (str "Reregistered executor: " (get-executor-id payload)))
   state)
 
 (defmethod handle-msg :disconnected
   [state payload]
-  (send-log-info state (str "Executor has disconnected: " (pprint payload)))
   state)
 
 (defmethod handle-msg :launch-task
   [state payload]
   (let [task-id (get-task-id payload)]
-    (send-log-info state (format "Launching task %s ..." task-id))
+    (log/infof "Launching task %s ..." task-id)
     (log/debug "Task id:" task-id)
-    (send-log-trace state (str "Task payload: " (pprint payload)))
     (-> (run-task task-id state payload)
         (Thread.)
         (.start))
@@ -171,27 +131,24 @@
 
 (defmethod handle-msg :kill-task
   [state payload]
-  (send-log-info state (str "Killing task: " (pprint payload)))
   state)
 
 (defmethod handle-msg :framework-message
   [state payload]
-  (send-log-info state (str "Got framework message: " (pprint payload)))
   state)
 
 (defmethod handle-msg :shutdown
   [state payload]
-  (send-log-info state (str "Shutting down executor: " (pprint payload)))
   state)
 
 (defmethod handle-msg :error
   [state payload]
-  (send-log-error state (str "Error in executor: " (pprint payload)))
+  (log/error "Error in executor: " (pprint payload))
   state)
 
 (defmethod handle-msg :default
   [state payload]
-  (send-log-warn (str "Unhandled message: " (pprint payload)))
+  (log/warn "Unhandled message: " (pprint payload))
   state)
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
