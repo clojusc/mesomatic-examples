@@ -6,11 +6,11 @@
     :url "http://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [com.stuartsierra/component "0.3.1"]
-                 [clojusc/twig "0.2.1"]
+                 [clojusc/twig "0.2.3"]
                  [spootnik/mesomatic "0.28.0-r0"]
                  [spootnik/mesomatic-async "0.28.0-r0"]
-                 [leiningen-core "2.6.1"]]
-  :plugins [[lein-codox "0.9.5"]
+                 [leiningen-core "2.7.0"]]
+  :plugins [[lein-codox "0.9.7"]
             [lein-simpleton "1.3.0"]]
   :aliases {"mesomatic"
             ^{:doc "Command line interface for mesomatic-examples.
