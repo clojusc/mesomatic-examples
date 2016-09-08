@@ -20,7 +20,7 @@
 ;;; attempt to keep things clear and clean for the learning experience. Do
 ;;; not emulate in production code!
 
-(def lein "/usr/local/bin/lein")
+(def docker-image "lfex/debian")
 
 (defn info-map
   ""
@@ -34,11 +34,7 @@
   (into
     (info-map)
     {:framework-id {:value framework-id}
-     :command {:value (format "cd %s && %s mesomatic %s:%s container-executor"
-                              cwd
-                              lein
-                              (:hostname master-info)
-                              (:port master-info))
+     :command {:value (format "export HOME=/tmp ; cd %s && docker run %s" cwd docker-image)
                :shell true}}))
 
 (defn get-executor-id
