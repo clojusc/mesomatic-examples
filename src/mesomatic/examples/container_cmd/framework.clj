@@ -1,4 +1,4 @@
-(ns mesomatic.examples.container-cli.framework
+(ns mesomatic.examples.container-cmd.framework
   ""
   (:require [clojure.core.async :as a :refer [chan <! go]]
             [clojure.string :as string]
@@ -23,7 +23,7 @@
 ;;; attempt to keep things clear and clean for the learning experience. Do
 ;;; not emulate in production code!
 
-(def framework-info-map {:name "Example Container Framework (Clojure)"
+(def framework-info-map {:name "Example Container CMD Framework (Clojure)"
                          :principal "test-framework-clojure"
                          :checkpoint true})
 (def limits

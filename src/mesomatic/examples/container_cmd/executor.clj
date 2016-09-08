@@ -1,4 +1,4 @@
-(ns mesomatic.examples.container-cli.executor
+(ns mesomatic.examples.container-cmd.executor
   ""
   (:require [clojure.core.async :as a :refer [chan <! go]]
             [clojure.string :as string]
@@ -26,7 +26,7 @@
   ""
   []
   {:executor-id (util/get-uuid)
-   :name "Example Container Executor (Clojure)"})
+   :name "Example Container CMD Executor (Clojure)"})
 
 (defn cmd-info-map
   ""
