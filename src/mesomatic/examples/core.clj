@@ -6,6 +6,8 @@
             [clojusc.twig :as logger]
             [mesomatic.examples.container.executor :as cntnr-executor]
             [mesomatic.examples.container.framework :as cntnr-framework]
+            [mesomatic.examples.container-cli.executor :as cntnrcli-executor]
+            [mesomatic.examples.container-cli.framework :as cntnrcli-framework]
             [mesomatic.examples.hello.executor :as hi-executor]
             [mesomatic.examples.hello.framework :as hi-framework]
             [mesomatic.examples.standard.executor :as std-executor]
@@ -46,6 +48,7 @@
   * ``executor``
   * ``framework``
   * ``container-framework``
+  * ``container-cli-framework``
   * ``exception-framework``
   * ``hello-framework``
 
@@ -79,6 +82,8 @@
         "executor" (std-executor/run master)
         "container-executor" (cntnr-executor/run master)
         "container-framework" (cntnr-framework/run master task-count)
+        "container-cli-executor" (cntnrcli-executor/run master)
+        "container-cli-framework" (cntnrcli-framework/run master task-count)
         "framework" (std-framework/run master task-count)
         "exception-framework" (excp-framework/run master)
         "hello-executor" (hi-executor/run master)
