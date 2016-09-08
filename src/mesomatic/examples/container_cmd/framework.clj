@@ -8,7 +8,7 @@
             [mesomatic.scheduler :as scheduler :refer [scheduler-driver]]
             [mesomatic.types :as types]
             [clojusc.twig :refer [pprint]]
-            [mesomatic.examples.container.executor :as example-executor]
+            [mesomatic.examples.container-cmd.executor :as example-executor]
             [mesomatic.examples.standard.offers :as offers]
             [mesomatic.examples.standard.task :as task]
             [mesomatic.examples.util :as util]))
