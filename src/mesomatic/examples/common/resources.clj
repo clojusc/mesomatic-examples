@@ -6,12 +6,12 @@
 
 (defn make-map
   ""
-  [data]
+  [{cpus :cpus mem :mem}]
   [{:name "cpus"
-    :scalar (:cpus data)
+    :scalar (if (nil? cpus) 1 cpus)
     :type :value-scalar}
    {:name "mem"
-    :scalar (:mem data)
+    :scalar (if (nil? mem) 128 mem)
     :type :value-scalar}])
 
 (defn cpus?
