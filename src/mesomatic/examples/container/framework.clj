@@ -249,7 +249,7 @@
   [state payload]
   (let [master-info (get-master-info payload)
         framework-id (get-framework-id payload)
-        exec-info (example-executor/cmd-info-map
+        exec-info (example-executor/docker-info-map
                     master-info framework-id (util/cwd))]
     (log/info "Registered with framework id:" framework-id)
     (log/trace "Got master info:" (pprint master-info))

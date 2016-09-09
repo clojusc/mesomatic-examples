@@ -26,16 +26,18 @@
   ""
   []
   {:executor-id (util/get-uuid)
-   :name "Example Container Executor (Clojure)"})
+   :name "Example Container Executor (Clojure)"
+   :command {:shell false}})
 
-(defn cmd-info-map
+(defn docker-info-map
   ""
   [master-info framework-id cwd]
   (into
     (info-map)
     {:framework-id {:value framework-id}
-     :command {:value (format "export HOME=/tmp ; cd %s && docker run %s" cwd docker-image)
-               :shell true}}))
+     :container {:type :container-type-docker
+                 :docker {:image docker-image
+                          :network :docker-network-bridge}}}))
 
 (defn get-executor-id
   ""
