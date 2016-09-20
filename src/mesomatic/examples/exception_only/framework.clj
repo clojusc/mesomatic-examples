@@ -98,6 +98,17 @@
 ;;; Framework entrypoint
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+(defn wrap-handler
+  ""
+  [state payload]
+  (try
+    (handle-msg state payload)
+    (catch Exception e
+      (log/error "Got error:" (.getMessage e))
+      (scheduler/abort! (:driver state))
+      (reduced
+        (assoc state :error e)))))
+
 (defn run
   "This is the function that actually runs the framework."
   [master]
@@ -112,7 +123,7 @@
     (log/debug "Starting example scheduler ...")
     (scheduler/start! driver)
     (log/debug "Reducing over example scheduler channel messages ...")
-    (a/reduce handle-msg {:driver driver
-                          :channel ch
-                          :exec-info nil} ch)
+    (a/reduce wrap-handler {:driver driver
+                            :channel ch
+                            :exec-info nil} ch)
     (scheduler/join! driver)))
