@@ -210,7 +210,6 @@
       state)
     state))
 
-
 (defn do-healthy-status
   ""
   [state payload]
