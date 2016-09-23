@@ -1,5 +1,5 @@
 (defproject mesomatic-examples "0.1.0-SNAPSHOT"
-  :description "A Clojure Port of the Mesos Java Example"
+  :description "Mesos Examples Using Mesomatic"
   :url "https://github.com/clojusc/mesomatic-examples"
   :license {
     :name "Eclipse Public License"
