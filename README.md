@@ -1,7 +1,7 @@
 # mesomatic-examples
 [![Build Status][travis-badge]][travis][![Dependencies Status][deps-badge]][deps][![Clojars Project][clojars-badge]][clojars][![Clojure version][clojure-v]](project.clj)
 
-*A Clojure Port of the Mesos Java Examples (and more)*
+*Clojure and Mesos: Mesos Examples Using Mesomatic*
 
 [![][logo]][logo-large]
 
