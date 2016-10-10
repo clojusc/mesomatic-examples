@@ -19,7 +19,7 @@
             ["run" "-m" "mesomatic.examples.core"]}
   :mesomatic-examples {
     :log-namespaces [mesomatic.examples]
-    :log-level :debug}
+    :log-level :trace}
   :codox {
     :project {
       :name "mesomatic-examples"

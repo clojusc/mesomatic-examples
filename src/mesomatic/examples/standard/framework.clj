@@ -90,7 +90,7 @@
   [payload]
   (get-in payload [:executor-id :value]))
 
-(defn get-slave-id
+(defn get-agent-id
   ""
   [payload]
   (get-in payload [:slave-id :value]))
@@ -107,7 +107,7 @@
 
 (defn log-framework-msg
   ""
-  [framework-id executor-id slave-id payload]
+  [framework-id executor-id agent-id payload]
   (let [bytes (String. (:data payload))
         log-type? (partial string/includes? bytes)]
     (cond
@@ -117,8 +117,8 @@
       (log-type? "WARN") (log/warn bytes)
       (log-type? "ERROR") (log/error bytes)
       :else (log/infof
-              "Framework %s got message from executor %s (slave=%s): %s"
-              framework-id executor-id slave-id bytes))))
+              "Framework %s got message from executor %s (agent=%s): %s"
+              framework-id executor-id agent-id bytes))))
 
 (defn get-task-state
   ""
@@ -275,7 +275,7 @@
     (log/trace "Got offers data:" offers-data)
     (log/trace "Got offer IDs:" (map :value offer-ids))
     (log/trace "Got other payload:" (pprint (dissoc payload :offers)))
-    (log/debug "Created tasks:"
+    (log/debugf "Created tasks: [%s]"
                (string/join ", " (map task/get-pb-name tasks)))
     (log/tracef "Got payload for %d task(s): %s"
                 (count tasks)
@@ -319,26 +319,26 @@
   [state payload]
   (let [framework-id (get-framework-id state)
         executor-id (get-executor-id payload)
-        slave-id (get-slave-id payload)]
-    (log-framework-msg framework-id executor-id slave-id payload)
+        agent-id (get-agent-id payload)]
+    (log-framework-msg framework-id executor-id agent-id payload)
     state))
 
 (defmethod handle-msg :slave-lost
   [state payload]
-  (let [slave-id (get-slave-id payload)]
-    (log/error "Framework %s lost connection with slave %s."
+  (let [agent-id (get-agent-id payload)]
+    (log/error "Framework %s lost connection with agent %s."
                (get-framework-id payload)
-               slave-id)
+               agent-id)
     state))
 
 (defmethod handle-msg :executor-lost
   [state payload]
   (let [executor-id (get-executor-id payload)
-        slave-id (get-slave-id payload)
+        agent-id (get-agent-id payload)
         status (get-status payload)]
-    (log/errorf (str "Framework lost connection with executor %s (slave=%s) "
+    (log/errorf (str "Framework lost connection with executor %s (agent=%s) "
                      "with status code %s.")
-                executor-id slave-id status)
+                executor-id agent-id status)
     state))
 
 (defmethod handle-msg :error
