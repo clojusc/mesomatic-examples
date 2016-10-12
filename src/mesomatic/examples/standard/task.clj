@@ -19,9 +19,11 @@
   (into task-info-map
         {:name (format (:name task-info-map) index)
          :task-id (util/get-uuid)
-         :agent-id (util/get-agent-id offer)  ;; maybe no functrion for this ...
+         :agent-id (util/get-agent-id offer)
+         :slave-id (util/get-agent-id offer)
          :executor (util/get-exec-info state) ;; use new payload ns instead
-         :resources (resources/make offer)}))
+         :resources (resources/make offer :cpus 0.1 :mem 128)
+         }))
 
 (defn make
   ""
