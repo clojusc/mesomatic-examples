@@ -72,7 +72,8 @@
 
 (defn make
   ""
-  [offer]
-  (-> offer
-      (sum)
-      (make-map)))
+  [offer & {:keys [cpus mem]}]
+  ; (-> offer
+  ;     (sum)
+  ;     (make-map))
+  (make-map {:cpus cpus :mem mem}))
