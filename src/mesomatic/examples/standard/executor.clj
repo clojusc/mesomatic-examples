@@ -34,6 +34,8 @@
   (into
     (info-map)
     {:framework-id {:value framework-id}
+     :resources [{:name "cpus" :scalar 0.1 :type :value-scalar}
+                 {:name "mem" :scalar 128 :type :value-scalar}]
      :command {:value (format "cd %s && %s mesomatic %s:%s executor"
                               cwd
                               lein
@@ -90,7 +92,7 @@
   [state message]
   (send-log state :error message))
 
-(defn update-task-success
+(defn run-task
   ""
   [task-id state payload]
   (let [executor-id (get-executor-id payload)
@@ -104,8 +106,17 @@
     ;; ...
     (Thread/sleep (rand-int 500))
     ;; ...
-    ;; Task complete.
+    ;; Task complete; next step should be to let the system know. First,
+    ;; though, if you have any updates you want to make to the state that will
+    ;; be used by the 'task-success' state change, you can do that here (we
+    ;; don't need to in this example).
+    state))
 
+(defn update-task-success
+  ""
+  [task-id state payload]
+  (let [executor-id (get-executor-id payload)
+        driver (:driver state)]
     (executor/send-status-update!
       driver
       (task/status-finished executor-id task-id))
@@ -122,12 +133,15 @@
       (task/status-failed executor-id task-id))
     (send-log-info state (format "Task %s failed" task-id))))
 
-(defn run-task
+(defn launch-task
   ""
   [task-id state payload]
   (try
-    (update-task-success task-id state payload)
+    (as-> state new-state
+          (run-task task-id new-state payload)
+          (update-task-success task-id new-state payload))
     (catch Exception e
+      (log/error "There was a problem running the task:" e)
       (update-task-fail task-id e state payload))))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -164,7 +178,7 @@
     (send-log-info state (format "Launching task %s ..." task-id))
     (log/debug "Task id:" task-id)
     (send-log-trace state (str "Task payload: " (pprint payload)))
-    (-> (run-task task-id state payload)
+    (-> (launch-task task-id state payload)
         (Thread.)
         (.start))
     state))
