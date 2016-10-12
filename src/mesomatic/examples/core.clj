@@ -79,12 +79,12 @@
       (log/debug "Using master:" master)
       (log/debug "Got task-type:" task-type)
       (condp = task-type
+        "framework" (std-framework/run master task-count)
         "executor" (std-executor/run master)
         "container-executor" (cntnr-executor/run master)
         "container-framework" (cntnr-framework/run master task-count)
         "container-cmd-executor" (cntnrcmd-executor/run master)
         "container-cmd-framework" (cntnrcmd-framework/run master task-count)
-        "framework" (std-framework/run master task-count)
         "exception-framework" (excp-framework/run master)
         "hello-executor" (hi-executor/run master)
         "hello-framework" (hi-framework/run master)))))
