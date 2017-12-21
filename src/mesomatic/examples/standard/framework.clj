@@ -29,7 +29,7 @@
 (def limits
   "Note that :max-tasks gets set via an argument passed to the `run` function."
   {:cpus-per-task 1
-   :mem-per-task 128
+   :mem-per-task 256
    :max-tasks nil})
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
