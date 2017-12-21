@@ -1,24 +1,18 @@
 (ns mesomatic.examples.standard.executor
-  ""
-  (:require [clojure.core.async :as a :refer [chan <! go]]
-            [clojure.string :as string]
-            [clojure.tools.logging :as log]
-            [clojusc.twig :refer [pprint]]
-            [mesomatic.async.executor :as async-executor]
-            [mesomatic.executor :as executor :refer [executor-driver]]
-            [mesomatic.types :as types]
-            [mesomatic.examples.standard.task :as task]
-            [mesomatic.examples.util :as util]))
+  (:require
+    [clojure.core.async :as a :refer [chan <! go]]
+    [clojure.string :as string]
+    [clojure.tools.logging :as log]
+    [clojusc.twig :refer [pprint]]
+    [mesomatic.async.executor :as async-executor]
+    [mesomatic.examples.standard.task :as task]
+    [mesomatic.examples.util :as util]
+    [mesomatic.executor :as executor :refer [executor-driver]]
+    [mesomatic.types :as types]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Constants and Data
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-;;;
-;;; In a real application, most of these would be defined in an appropriate
-;;; context, using application confgiration values, values extracted from
-;;; passed state, etc. This is done for pedagogical purposes only: in an
-;;; attempt to keep things clear and clean for the learning experience. Do
-;;; not emulate in production code!
 
 (def lein "/usr/local/bin/lein")
 

@@ -1,17 +1,17 @@
 (ns mesomatic.examples.standard.framework
-  ""
-  (:require [clojure.core.async :as a :refer [chan <! go]]
-            [clojure.string :as string]
-            [clojure.tools.logging :as log]
-            [mesomatic.async.executor :as async-executor]
-            [mesomatic.async.scheduler :as async-scheduler]
-            [mesomatic.scheduler :as scheduler :refer [scheduler-driver]]
-            [mesomatic.types :as types]
-            [clojusc.twig :refer [pprint]]
-            [mesomatic.examples.standard.executor :as example-executor]
-            [mesomatic.examples.standard.offers :as offers]
-            [mesomatic.examples.standard.task :as task]
-            [mesomatic.examples.util :as util]))
+  (:require
+    [clojure.core.async :as a :refer [chan <! go]]
+    [clojure.string :as string]
+    [clojure.tools.logging :as log]
+    [clojusc.twig :refer [pprint]]
+    [mesomatic.async.executor :as async-executor]
+    [mesomatic.async.scheduler :as async-scheduler]
+    [mesomatic.examples.standard.executor :as example-executor]
+    [mesomatic.examples.standard.offers :as offers]
+    [mesomatic.examples.standard.task :as task]
+    [mesomatic.examples.util :as util]
+    [mesomatic.scheduler :as scheduler :refer [scheduler-driver]]
+    [mesomatic.types :as types]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Constants and Data

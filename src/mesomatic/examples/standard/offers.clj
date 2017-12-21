@@ -1,11 +1,11 @@
 (ns mesomatic.examples.standard.offers
-  ""
-  (:require [clojure.tools.logging :as log]
-            [clojure.string :as string]
-            [clojusc.twig :refer [pprint]]
-            [mesomatic.examples.common.resources :as resources]
-            [mesomatic.examples.standard.task :as task]
-            [mesomatic.examples.util :as util]))
+  (:require
+    [clojure.string :as string]
+    [clojure.tools.logging :as log]
+    [clojusc.twig :refer [pprint]]
+    [mesomatic.examples.common.resources :as resources]
+    [mesomatic.examples.standard.task :as task]
+    [mesomatic.examples.util :as util]))
 
 (defn process-one
   ""
