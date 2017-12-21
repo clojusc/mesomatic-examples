@@ -10,15 +10,14 @@
     [clojusc/mesomatic-async "1.0.1-r0"]
     [clojusc/twig "0.3.2"]
     [com.stuartsierra/component "0.3.2"]
+    [leiningen-core "2.7.1"]
     [org.clojure/clojure "1.8.0"]]
   :mesomatic-examples {
     :log-namespaces [mesomatic.examples]
     :log-level :trace}
   :profiles {
     :dev {
-      :source-paths ["dev-resources/src"]
-      :dependencies [
-        [leiningen-core "2.7.1"]]}
+      :source-paths ["dev-resources/src"]}
     :test {
       :exclusions [org.clojure/clojure]
       :dependencies [

@@ -39,8 +39,8 @@ Mesos frameworks using bare-bones Clojure (the exception to this is the
 example which will demonstrate the use of the
 [Component library](https://github.com/stuartsierra/component), allosing one
 to treat the framework like a system). Also, unlike the Java examples, none of
-these Mesomatic examples create bash scripts to kick off executors and 
-frameworks from the command-line. Instead, they use `lein mesomatic` aliases 
+these Mesomatic examples create bash scripts to kick off executors and
+frameworks from the command-line. Instead, they use `lein mesomatic` aliases
 (defined in `project.clj`).
 
 
@@ -51,13 +51,13 @@ running on your machine (or cluster):
 
 * Java
 * Maven
-* ``lein``
+* `lein`
 * The native Mesos library (matching the version used in this project).
 
 The latest version of these examples is built against Mesos 0.28.2 and
 a mesomatic 0.28.0-r0. However, since there are Mesomatic features missing
 and bugs fixed which haven't yet been merged upstream, you will need to clone
-the fork that has these (from the ``mesomatic-examples`` clone directory):
+the fork that has these (from the `mesomatic-examples` clone directory):
 
 ```
 $ mkdir checkouts
@@ -65,11 +65,11 @@ $ cd checkouts
 $ git clone https://github.com/clojusc/mesomatic
 ```
 
-Note that the default branch, ``deploy``, has merged all of the feature and
+Note that the default branch, `deploy`, has merged all of the feature and
 bug fix branches.
 
 All other dependencies (including the Java bindings) are downloaded
-automatically by ``lein`` when you run the examples.
+automatically by `lein` when you run the examples.
 
 
 ## Set Up [&#x219F;](#contents)
@@ -86,12 +86,12 @@ $ ./bin/mesos-local.sh
 The examples need access to the native Mesos library. If you get errors like
 the following
 
-* ``Failed to load native Mesos library``
-* ``java.lang.UnsatisfiedLinkError: no mesos in java.library.path``
+* `Failed to load native Mesos library`
+* `java.lang.UnsatisfiedLinkError: no mesos in java.library.path`
 
 then one of the techniques you may employ to address this is setting the
-``MESOS_NATIVE_JAVA_LIBRARY`` environment variable in your OS shell. For
-example, if you have built Mesos in ``/opt/mesos/0.28.2/build``, you can run:
+`MESOS_NATIVE_JAVA_LIBRARY` environment variable in your OS shell. For
+example, if you have built Mesos in `/opt/mesos/0.28.2/build`, you can run:
 
 ```bash
 $ export MESOS_NATIVE_JAVA_LIBRARY=/opt/mesos/0.28.2/build/src/.libs/libmesos.so
@@ -101,7 +101,7 @@ $ export MESOS_NATIVE_JAVA_LIBRARY=/opt/mesos/0.28.2/build/src/.libs/libmesos.so
 ## Usage [&#x219F;](#contents)
 
 With the necessary set up complete and after having changed directory to the
-the ``mesomatic-examples`` clone directory, you can run the various example
+the `mesomatic-examples` clone directory, you can run the various example
 as shown below. Note that the command line argument for the "master" is given
 as "127.0.0.1:5050", and that will only work for you if that's the IP and port
 your own Mesos install is running on. As such, be sure to update the commands
@@ -155,7 +155,8 @@ The project's auto-generated documentation (such that it is) is available here:
 
 ## License [&#x219F;](#contents)
 
-Copyright © 2016 Duncan McGreggor
+Copyright © 2016-2017 Duncan McGreggor
+Copyright © 2017 Clojure-Aided Enrichment Center
 
 Apache License, Version 2.0.
 
