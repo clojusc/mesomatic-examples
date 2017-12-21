@@ -5,14 +5,13 @@
     :name "Eclipse Public License"
     :url "http://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [
-    [clojusc/twig "0.2.6"]
-    [com.stuartsierra/component "0.3.1"]
-    [leiningen-core "2.7.1"]
-    [org.clojure/clojure "1.8.0"]
-    [spootnik/mesomatic "1.0.1-r0"]
-    [spootnik/mesomatic-async "1.0.1-r0"]]
+    [clojusc/mesomatic "1.0.1-r0"]
+    [clojusc/mesomatic-async "1.0.1-r0"]
+    [clojusc/twig "0.3.2"]
+    [com.stuartsierra/component "0.3.2"]
+    [org.clojure/clojure "1.9.0"]]
   :plugins [
-    [lein-codox "0.10.1"]
+    [lein-codox "0.10.3"]
     [lein-simpleton "1.3.0"]]
   :mesomatic-examples {
     :log-namespaces [mesomatic.examples]
@@ -30,7 +29,8 @@
   :profiles {
     :dev {
       :source-paths ["dev-resources/src"]
-      :repl-options {:init-ns mesomatic.examples.dev}}
+      :dependencies [
+        [leiningen-core "2.7.1"]]}
     :test {
       :exclusions [org.clojure/clojure]
       :dependencies [
