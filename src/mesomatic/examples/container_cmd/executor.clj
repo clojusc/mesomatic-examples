@@ -1,14 +1,14 @@
 (ns mesomatic.examples.container-cmd.executor
-  ""
-  (:require [clojure.core.async :as a :refer [chan <! go]]
-            [clojure.string :as string]
-            [clojure.tools.logging :as log]
-            [clojusc.twig :refer [pprint]]
-            [mesomatic.async.executor :as async-executor]
-            [mesomatic.executor :as executor :refer [executor-driver]]
-            [mesomatic.types :as types]
-            [mesomatic.examples.standard.task :as task]
-            [mesomatic.examples.util :as util]))
+  (:require
+    [clojure.core.async :as a :refer [chan <! go]]
+    [clojure.string :as string]
+    [clojusc.twig :refer [pprint]]
+    [mesomatic.async.executor :as async-executor]
+    [mesomatic.examples.standard.task :as task]
+    [mesomatic.examples.util :as util]
+    [mesomatic.executor :as executor :refer [executor-driver]]
+    [mesomatic.types :as types]
+    [taoensso.timbre :as log]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Constants and Data

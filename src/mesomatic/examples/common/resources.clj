@@ -1,8 +1,8 @@
 (ns mesomatic.examples.common.resources
-  ""
-  (:require [clojure.tools.logging :as log]
-            [clojure.string :as string]
-            [clojusc.twig :refer [pprint]]))
+  (:require
+    [clojure.string :as string]
+    [clojusc.twig :refer [pprint]]
+    [taoensso.timbre :as log]))
 
 (defn make-map
   ""

@@ -1,13 +1,13 @@
 (ns mesomatic.examples.exception-only.framework
-  ""
-  (:require [clojure.core.async :as a :refer [chan <! go]]
-            [clojure.string :as string]
-            [clojure.tools.logging :as log]
-            [mesomatic.async.executor :as async-executor]
-            [mesomatic.async.scheduler :as async-scheduler]
-            [mesomatic.scheduler :as scheduler :refer [scheduler-driver]]
-            [mesomatic.types :as types]
-            [clojusc.twig :refer [pprint]]))
+  (:require
+    [clojure.core.async :as a :refer [chan <! go]]
+    [clojure.string :as string]
+    [clojusc.twig :refer [pprint]]
+    [mesomatic.async.executor :as async-executor]
+    [mesomatic.async.scheduler :as async-scheduler]
+    [mesomatic.scheduler :as scheduler :refer [scheduler-driver]]
+    [mesomatic.types :as types]
+    [taoensso.timbre :as log]))
 
 ;;; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;;; Constants and Data
