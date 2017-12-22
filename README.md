@@ -12,10 +12,6 @@
 * [Dependencies](#dependencies-)
 * [Set Up](#set-up-)
 * [Usage](#usage-)
-  * [Java Framework Port](#java-framework-port-)
-  * [Java Exception Framework Port](#java-exception-framework-port-)
-  * ['Hello, World!' Framework](#hello-world-framework-)
-  * ['Hello, World!' Docker Framework](#hello-world-docker-framework-)
 * [Documentation](#documentation-)
 * [License](#license-)
 
@@ -27,10 +23,14 @@ examples](https://github.com/apache/mesos/tree/master/src/examples/java) to Cloj
 
 So far, these include:
 
-* framework (IN PROGRESS) - [add description]
+* scheduler-only - a minimalist framework that simply sets up a scheduler and
+  nothing else
+* exception-framework - a minimalist framework that only shows how an exception is handled by the Mesos framework
+* bash-scheduler (IN PROGRESS) - a simple framwork that XXX
+* framework (IN PROGRESS) - A Mesomatic port of
 * hello-framework (IN PROGRESS) - A highly simplified, mostly minimal example of Mesomatic in action
 * container-framework (IN PROGRESS) - [add description]
-* exception-framework - a minimalist framework that only shows how an exception is handled by the Mesos framework
+
 
 We plan on adding the multi-executor framework as well a few other examples.
 
@@ -83,15 +83,22 @@ you), you can start up a local mesos:
 $ ./bin/mesos-local.sh
 ```
 
-The examples need access to the native Mesos library. If you get errors like
-the following
+Alternatively, you may download and run one of our docker images:
 
-* `Failed to load native Mesos library`
-* `java.lang.UnsatisfiedLinkError: no mesos in java.library.path`
+```bash
+$ docker run -d -p 5050:5050 clojusc/mesos:1.0.1
+```
 
-then one of the techniques you may employ to address this is setting the
-`MESOS_NATIVE_JAVA_LIBRARY` environment variable in your OS shell. For
-example, if you have built Mesos in `/opt/mesos/0.28.2/build`, you can run:
+If you're using docker, you'll want to set the `LIBPROCESS_IP` environment
+variable, using the IP address of the Mesos container. This can be obtained
+suchly:
+
+```bash
+$ docker inspect <container-id> | jq .[0].NetworkSettings.IPAddress
+```
+
+In both cases, you'll need to set the `MESOS_NATIVE_JAVA_LIBRARY` environment
+variable, e.g.:
 
 ```bash
 $ export MESOS_NATIVE_JAVA_LIBRARY=/opt/mesos/0.28.2/build/src/.libs/libmesos.so
@@ -102,23 +109,48 @@ $ export MESOS_NATIVE_JAVA_LIBRARY=/opt/mesos/0.28.2/build/src/.libs/libmesos.so
 
 With the necessary set up complete and after having changed directory to the
 the `mesomatic-examples` clone directory, you can run the various example
-as shown below. Note that the command line argument for the "master" is given
-as "127.0.0.1:5050", and that will only work for you if that's the IP and port
-your own Mesos install is running on. As such, be sure to update the commands
-below as needed for your environment.
+as shown below. Note that `lein mesomatic` is an alias defined in this repo's
+`project.clj` file.
+
+For convenience, we'll set a `MASTER` environment variable for these examples,
+e.g.:
+
+```bash
+export MASTER=127.0.0.1:5050
+```
+
+Or, if using Docker, the IP address of the docker interface on the host, e.g.:
+
+```bash
+export MASTER=172.17.0.3:5050
+```
+
+
+### Scheduler-Only Framework [&#x219F;](#contents)
+
+```bash
+$ lein mesomatic $MASTER scheduler-only-framework
+```
+
+
+### Simple Bash Scheduler Framework [&#x219F;](#contents)
+
+```bash
+$ lein mesomatic $MASTER bash-scheduler-framework
+```
 
 
 ### Java Framework Port [&#x219F;](#contents)
 
 ```bash
-$ lein mesomatic 127.0.0.1:5050 framework
+$ lein mesomatic $MASTER framework
 ```
 
 
 ### Java Exception Framework Port [&#x219F;](#contents)
 
 ```bash
-$ lein mesomatic 127.0.0.1:5050 exception-framework
+$ lein mesomatic $MASTER exception-framework
 ```
 
 
@@ -130,14 +162,14 @@ TBD
 ### 'Hello, World!' Framework [&#x219F;](#contents)
 
 ```bash
-$ lein mesomatic 127.0.0.1:5050 hello-framework
+$ lein mesomatic $MASTER hello-framework
 ```
 
 
 ### 'Hello, World!' Docker Framework [&#x219F;](#contents)
 
 ```bash
-$ lein mesomatic 127.0.0.1:5050 container-framework
+$ lein mesomatic $MASTER container-framework
 ```
 
 
