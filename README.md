@@ -90,18 +90,17 @@ $ docker run -d -p 5050:5050 clojusc/mesos:1.0.1
 ```
 
 If you're using docker, you'll want to set the `LIBPROCESS_IP` environment
-variable, using the IP address of the Mesos container. This can be obtained
-suchly:
+variable, using the IP address of Docker host interface, e.g. `docker0`:
 
 ```bash
-$ docker inspect <container-id> | jq .[0].NetworkSettings.IPAddress
+$ export LIBPROCESS_IP=172.17.0.1
 ```
 
 In both cases, you'll need to set the `MESOS_NATIVE_JAVA_LIBRARY` environment
 variable, e.g.:
 
 ```bash
-$ export MESOS_NATIVE_JAVA_LIBRARY=/opt/mesos/0.28.2/build/src/.libs/libmesos.so
+$ export MESOS_NATIVE_JAVA_LIBRARY=/opt/mesos/1.0.1/build/src/.libs/libmesos.so
 ```
 
 
@@ -119,7 +118,14 @@ e.g.:
 export MASTER=127.0.0.1:5050
 ```
 
-Or, if using Docker, the IP address of the docker interface on the host, e.g.:
+Or, if using Docker, the IP address of the Mesos container. This can be obtained
+suchly:
+
+```bash
+$ docker inspect <container-id> | jq .[0].NetworkSettings.IPAddress
+```
+
+Then:
 
 ```bash
 export MASTER=172.17.0.3:5050
