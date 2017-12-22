@@ -8,6 +8,7 @@
   :dependencies [
     [clojusc/mesomatic "1.0.1-r0"]
     [clojusc/mesomatic-async "1.0.1-r0"]
+    [clojusc/trifl "0.2.0"]
     [clojusc/twig "0.3.2"]
     [com.stuartsierra/component "0.3.2"]
     [leiningen-core "2.7.1"]
