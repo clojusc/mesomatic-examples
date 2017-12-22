@@ -2,9 +2,9 @@
   "The namespace which holds the entry point for the Mesomatic examples."
   (:require
     [clojure.core.async :refer [chan <! go] :as a]
-    [clojure.tools.logging :as log]
     [clojusc.twig :as logger]
     [leiningen.core.project :as lein-prj]
+    [mesomatic.examples.bash-scheduler.framework :as bash-scheduler]
     [mesomatic.examples.container-cmd.executor :as cntnrcmd-executor]
     [mesomatic.examples.container-cmd.framework :as cntnrcmd-framework]
     [mesomatic.examples.container.executor :as cntnr-executor]
@@ -12,9 +12,12 @@
     [mesomatic.examples.exception-only.framework :as excp-framework]
     [mesomatic.examples.hello.executor :as hi-executor]
     [mesomatic.examples.hello.framework :as hi-framework]
+    [mesomatic.examples.scheduler-only.framework :as scheduler-only-framework]
     [mesomatic.examples.standard.executor :as std-executor]
     [mesomatic.examples.standard.framework :as std-framework]
-    [mesomatic.examples.util :as util])
+    [mesomatic.examples.util :as util]
+    [taoensso.timbre :as log]
+    [trifl.docs :as docs])
   (:gen-class))
 
 (defn get-config
@@ -22,55 +25,37 @@
   []
   (:mesomatic-examples (lein-prj/read)))
 
-(defn usage
-  ""
-  []
-  (println)
-  (-> 'mesomatic.examples.core
-      (util/get-docstring '-main)
-      (println)))
-
 (defn -main
-  "It is expected that this function be called from `lein` in one of the
-  two following manners:
-
+  "
+  Usage:
   ```
-  $ lein mesomatic 127.0.0.1:5050 <task type>
+    lein mesomatic MASTER TASK-TYPE [TASK-COUNT]
+    lein mesomatic [-h | --help]
+  ```
+
+  `TASK-TYPE` is one of the several options checked in this function's
+  `case` statement (see the source code for the available options). Note that
+  some of these task types are executors -- these are only intended to be
+  called directly by Mesos.
+
+  `TASK-COUNT` is an integer representing the number of times a task
+  will be run. If a task count is not provided, a default value of `5` is
+  used instead.
+
+  Examples:
+  ```
+    $ lein mesomatic 127.0.0.1:5050 scheduler-only-framework
   ```
 
   or
 
   ```
-  $ lein mesomatic 127.0.0.1:5050 <task type> <task count>
-  ```
-
-  where ``<task-type>`` is one of:
-
-  * ``executor`
-  * `framework`
-  * `container-framework`
-  * `container-cli-framework`
-  * `exception-framework`
-  * `hello-framework`
-
-  and `<task count>` is an integer representing the number of times a task
-  will be run. If a task count is not provided, a default value of `5` is
-  used instead.
-
-  That being said, only Mesos should call with the `executor` task type;
-  calling humans will only call with the `framework` task type.
-
-  Note that in order for this to work, one needs to add the following alias to
-  the project's `project.clj`:
-
-  ```clj
-  :aliases {\"mesomatic\" [\"run\" \"-m\" \"mesomatic-examples.core\"]}
-  ```
-  "
-  ([flag]
-    (case flag
-      "--help" (usage)
-      "-h" (usage)))
+    $ lein mesomatic 172.17.0.3:5050 framework 2
+  ```"
+  ([]
+    (docs/print-docstring #'-main))
+  ([_flag]
+    (docs/print-docstring #'-main))
   ([master task-type]
     (-main master task-type 5))
   ([master task-type task-count]
@@ -80,12 +65,14 @@
       (log/debug "Using master:" master)
       (log/debug "Got task-type:" task-type)
       (case (keyword task-type)
-        :framework (std-framework/run master task-count)
-        :executor (std-executor/run master)
-        :container-executor (cntnr-executor/run master)
-        :container-framework (cntnr-framework/run master task-count)
+        :bash-scheduler-framework (bash-scheduler/run master)
         :container-cmd-executor (cntnrcmd-executor/run master)
         :container-cmd-framework (cntnrcmd-framework/run master task-count)
+        :container-executor (cntnr-executor/run master)
+        :container-framework (cntnr-framework/run master task-count)
         :exception-framework (excp-framework/run master)
+        :executor (std-executor/run master)
+        :framework (std-framework/run master task-count)
         :hello-executor (hi-executor/run master)
-        :hello-framework (hi-framework/run master)))))
+        :hello-framework (hi-framework/run master)
+        :scheduler-only-framework (scheduler-only-framework/run master)))))
